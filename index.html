@@ -1,0 +1,2167 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Sieu Ga79</title>
+<style>
+body{background:#0a0f1a;color:#e5e7eb;font-family:Consolas,monospace;margin:8px;padding:8px}
+.container{background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:8px;max-width:1200px;margin:auto}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.header select,.header button{background:#374151;color:#e5e7eb;border:1px solid #1f2937;border-radius:6px;padding:6px 8px;margin-right:10px;cursor:pointer}
+.header button:hover{background:#4b5563}
+.input-area{margin-bottom:12px}
+.input-area textarea{width:100%;background:#374151;color:#e5e7eb;border:1px solid #1f2937;border-radius:6px;padding:8px;font-family:Consolas,monospace;font-size:11px;resize:vertical}
+.stats-panel{background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:8px}
+.line{margin-bottom:4px}
+.line.xito{margin-top:12px}
+.line label{display:inline-block;width:180px;color:#facc15;background:#1e293b;font-weight:700;padding:2px 6px;border-radius:4px;text-align:center;margin-right:4px}
+.line .seq{display:inline-block;white-space:nowrap;font-size:10pt}
+.digit{display:inline-block;padding:0 2px;margin-right:2px;border-radius:4px}
+.hot{color:#DD0000}.cold{color:#93c5fd}.normal{color:#e5e7eb}
+#freq-table{width:200px;border-collapse:collapse;margin-top:6px}
+#freq-table th,#freq-table td{border:1px solid #1f2937;padding:2px 4px;text-align:center}
+/* Enhanced AI Styles */
+.algo-title{color:#a78bfa;font-weight:bold;margin-bottom:8px;font-size:11pt}
+.algo-result{color:#e5e7eb;font-size:10pt;margin:5px 0}
+.algo-comparison{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:15px}
+.algo-card{background:#1e293b;border:1px solid #374151;border-radius:8px;padding:12px;transition:all 0.3s}
+.algo-card:hover{border-color:#8b5cf6;transform:translateY(-2px)}
+.backtest-section{margin-top:20px;padding:15px;background:#0f172a;border-radius:8px;border:1px solid #1e293b}
+.backtest-title{color:#60a5fa;font-weight:bold;font-size:12pt;margin-bottom:10px}
+.backtest-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat-box{background:#1e293b;padding:10px;border-radius:6px;text-align:center}
+.stat-value{color:#fbbf24;font-size:16pt;font-weight:bold}
+.stat-label{color:#9ca3af;font-size:9pt;margin-top:3px}
+
+
+/* AI Module Styles */
+.ai-module {
+    margin-top: 20px;
+    border: 2px solid #60a5fa;
+    border-radius: 8px;
+    padding: 15px;
+    background: #0b1220;
+}
+.ai-header {
+    color: #60a5fa;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ai-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.ai-controls select, .ai-controls button {
+    background: #374151;
+    color: #e5e7eb;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+.ai-results {
+    background: #1e293b;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 10px;
+    min-height: 100px;
+}
+.ai-loading {
+    color: #93c5fd;
+    text-align: center;
+    padding: 20px;
+}
+.ai-error {
+    color: #f87171;
+    text-align: center;
+    padding: 20px;
+}
+.ai-prediction {
+    color: #facc15;
+    font-weight: bold;
+    margin: 10px 0;
+}
+.ai-analysis {
+    color: #e5e7eb;
+    font-size: 11px;
+    line-height: 1.4;
+}
+/* Result Table Styles */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 11px;
+}
+.result-table th, .result-table td {
+    border: 1px solid #374151;
+    padding: 8px;
+    text-align: center;
+}
+.result-table th {
+    background: #1e293b;
+    color: #facc15;
+    font-weight: 600;
+}
+.result-table td {
+    background: #0b1220;
+}
+.result-table tr.hot {
+    color: #ef4444;
+    font-weight: bold;
+}
+.result-table tr.medium {
+    color: #f59e0b;
+}
+.top-numbers {
+    margin: 12px 0;
+    padding: 10px;
+    background: #1e3a8a;
+    border-radius: 6px;
+    border-left: 4px solid #fbbf24;
+}
+.top-numbers b {
+    color: #fbbf24;
+    font-size: 13pt;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <label>Vùng:</label>
+      <select id="region-select" onchange="updateDaiOptions()">
+        <option value="MB">Miền Bắc</option>
+        <option value="MN">Miền Nam</option>
+        <option value="MT">Miền Trung</option>
+      </select>
+      <label>Thứ:</label>
+      <select id="thu-select" onchange="updateDaiOptions()">
+        <option value="2">Thứ 2</option>
+        <option value="3">Thứ 3</option>
+        <option value="4">Thứ 4</option>
+        <option value="5">Thứ 5</option>
+        <option value="6">Thứ 6</option>
+        <option value="7">Thứ 7</option>
+        <option value="CN">Chủ nhật</option>
+      </select>
+      <label>Đài:</label>
+      <select id="dai-select"></select>
+      <label>Hiển thị:</label>
+      <select id="show-count" onchange="updateShowCount()">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30" selected>30</option>
+        <option value="60">60</option>
+        <option value="90">90</option>
+      </select>
+      <button onclick="loadApiData()">Tải dữ liệu API</button>
+      <button onclick="updateStats()">Cập nhật thống kê</button>
+      <button onclick="clearData()">Xóa dữ liệu</button>
+	<div style="margin-top:6px">
+	  <label>Lùi:</label>
+	  <button onclick="changeShift(-1)">◀</button>
+	  <span id="shift-display" style="min-width:25px;display:inline-block;text-align:center">0</span>
+	  <button onclick="changeShift(1)">▶</button>
+	  <button onclick="runEnhancedAI()" style="margin-left:15px;background:#8b5cf6;color:white;font-weight:600">🚀 Test AI</button>
+	  
+	</div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <textarea id="data-input" rows="5" placeholder="Kết quả xổ số tải từ API..."></textarea>
+  </div>
+
+  <div class="stats-panel">
+    <div id="digit-lines"></div>
+    <div id="prediction-lines"></div>
+  </div>
+
+ 
+<div id="result-table" style="margin-top: 30px;"></div>
+<!-- ==================== AI MODULE - LÔ/ĐỀ ==================== -->
+<div class="ai-module">
+  <div class="ai-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-weight:600;">🤖 DỰ ĐOÁN CẦU - AI NÂNG CAO</span>
+
+      <!-- === Nút Lùi đồng bộ === -->
+      <div style="display:flex;align-items:center;gap:5px;">
+        <label style="color:#fbbf24;font-weight:bold;">Lùi:</label>
+        <button onclick="changeShift(-1)" 
+                style="background:#374151;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;">◀</button>
+        <span id="shift-display-top-ai" 
+              style="min-width:25px;text-align:center;color:#facc15;font-weight:bold;">0</span>
+        <button onclick="changeShift(1)" 
+                style="background:#374151;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;">▶</button>
+      </div>
+    </div>
+
+    <button onclick="toggleAIModule()" 
+            style="background:#dc2626;padding:5px 15px;border-radius:5px;border:none;color:white">Ẩn</button>
+  </div>
+
+  
+<div class="ai-controls">
+  <label>📊 Số kỳ phân tích:</label>
+  <select id="ai-period-new">
+    <option value="20">20 kỳ</option>
+    <option value="30" selected>30 kỳ</option>
+    <option value="50">50 kỳ</option>
+    <option value="100">100 kỳ</option>
+  </select>
+
+  <label style="margin-left:15px">🧪 Backtest:</label>
+  <select id="backtest-count">
+    <option value="5">5 kỳ</option>
+    <option value="10" selected>10 kỳ</option>
+    <option value="20">20 kỳ</option>
+    <option value="30">30 kỳ</option>
+  </select>
+
+  <button onclick="runEnhancedAI()">🚀 Chạy AI + Backtest</button>
+    <button onclick="copyAIResults()">📋 Copy kết quả</button>
+  </div>
+  
+  <div class="ai-results">
+    <div id="ai-result" style="min-height:100px">
+      <div class="ai-loading">
+        <p>🎲 SieuGa999/MB hoặc SieuGa79/TPB</p>
+              </div>
+    </div>
+  </div>
+</div>
+<!-- THÊM DÒNG NÀY -->
+<div id="detailed-results" style="margin-top:20px"></div>
+
+<script>
+const DAI_CODES = {
+  "MN": { // Miền Nam
+    "2": {"cama":"Cà Mau","doth":"Đồng Tháp","tphc":"TP. Hồ Chí Minh"},            // Thứ 2
+    "3": {"bali":"Bạc Liêu","betr":"Bến Tre","vuta":"Vũng Tàu"},                   // Thứ 3
+    "4": {"cath":"Cần Thơ","dona":"Đồng Nai","sotr":"Sóc Trăng"},                  // Thứ 4
+    "5": {"angi":"An Giang","bith":"Bình Thuận","tani":"Tây Ninh"},                // Thứ 5
+    "6": {"bidu":"Bình Dương","trvi":"Trà Vinh","vilo":"Vĩnh Long"},               // Thứ 6
+    "7": {"biph":"Bình Phước","hagi":"Hậu Giang","loan":"Long An","tphc":"TP. Hồ Chí Minh"}, // Thứ 7
+    "CN": {"dalat":"Đà Lạt","kigi":"Kiên Giang","tigi":"Tiền Giang"}               // Chủ nhật
+  },
+
+  "MT": { // Miền Trung
+    "2": {"thth":"Thừa Thiên Huế","phye":"Phú Yên"},                               // Thứ 2
+    "3": {"dalak":"Đắk Lắk","quna":"Quảng Nam"},                                   // Thứ 3
+    "4": {"dana":"Đà Nẵng","khho":"Khánh Hòa"},                                    // Thứ 4
+    "5": {"bidi":"Bình Định","qubi":"Quảng Bình","qutr":"Quảng Trị"},              // Thứ 5
+    "6": {"gila":"Gia Lai","nith":"Ninh Thuận"},                                   // Thứ 6
+    "7": {"dana":"Đà Nẵng","dano":"Đắk Nông","qung":"Quảng Ngãi"},                // Thứ 7
+    "CN": {"khho":"Khánh Hòa","thth":"Thừa Thiên Huế","kotu":"Kon Tum"}            // Chủ nhật
+  },
+
+  "MB": { // Miền Bắc
+    "2": {"miba":"Miền Bắc"},
+    "3": {"miba":"Miền Bắc"},
+    "4": {"miba":"Miền Bắc"},
+    "5": {"miba":"Miền Bắc"},
+    "6": {"miba":"Miền Bắc"},
+    "7": {"miba":"Miền Bắc"},
+    "CN": {"miba":"Miền Bắc"}
+  }
+};
+
+
+
+let showCount = 30;
+let currentShift = 0;
+let soThieuMode = 'tram';
+let resultPage = 0; // Trang hiện tại của bảng kết quả chi tiết
+let aiModuleVisible = true;
+function updateShowCount(){
+  showCount = parseInt(document.getElementById('show-count').value);
+}
+
+function updateDaiOptions(){
+  const region = document.getElementById('region-select').value;
+  const thu = document.getElementById('thu-select').value;
+  const dai = document.getElementById('dai-select');
+  dai.innerHTML = '';
+
+  const list = DAI_CODES[region]?.[thu] || {};
+  for (const [code, name] of Object.entries(list)) {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = name;
+    dai.appendChild(opt);
+  }
+
+  if (dai.options.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '⚠️ Không có đài phù hợp';
+    dai.appendChild(opt);
+  } else {
+    dai.selectedIndex = 0;
+  }
+}
+
+function last5(s){ 
+  s = (s||'').replace(/[^0-9]/g,''); 
+  return s.length>=5 ? s.slice(-5) : null; 
+}
+
+function getApiList(j){
+  if(Array.isArray(j.issueList)) return j.issueList;
+  if(j.data&&Array.isArray(j.data.issueList)) return j.data.issueList;
+  if(Array.isArray(j.result)) return j.result;
+  if(Array.isArray(j.data)) return j.data;
+  if(j.t&&Array.isArray(j.t.issueList)) return j.t.issueList;
+  if(Array.isArray(j.list)) return j.list;
+  return [];
+}
+
+async function fetchApiData(){
+  const region = document.getElementById('region-select').value;
+  const daiSelect = document.getElementById('dai-select');
+  let dai = daiSelect.value;
+
+  if (!dai) {
+    if (daiSelect.options.length > 0) {
+      dai = daiSelect.options[0].value;
+      daiSelect.value = dai;
+    } else {
+      alert("⚠️ Vui lòng chọn Đài trước khi tải dữ liệu.");
+      return [];
+    }
+  }
+
+  const limit = (region === 'MB') ? 150 : 100;
+  const url = `https://www.kqxs88.live/api/front/open/lottery/history/list/game?limitNum=${limit}&gameCode=${dai}`;
+  const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+
+  try {
+    const res = await fetch(proxy);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const wrap = await res.json();
+    const json = JSON.parse(wrap.contents);
+    const list = getApiList(json);
+    if (!list.length) throw new Error("Không tìm thấy dữ liệu hợp lệ cho đài " + dai);
+    return list;
+  } catch (e) {
+    alert("❌ Lỗi tải API đài " + dai + ": " + e.message);
+    return [];
+  }
+}
+
+function extractDb5(d){ 
+  return d && d.openNum ? last5(d.openNum) : null; 
+}
+
+function freq(arr){
+  const f={}; 
+  for(const x of arr) f[x]=(f[x]||0)+1;
+  const sorted=Object.entries(f).sort((a,b)=>b[1]-a[1]);
+  const top=sorted.slice(0,3).map(e=>+e[0]);
+  const bot=sorted.slice(-3).map(e=>+e[0]);
+  return {top,bot,all:f};
+}
+
+function isStraightMod10AnyOrder(d){
+  if(!Array.isArray(d) || d.length !== 5) return false;
+  const S = new Set(d);
+  if(S.size !== 5) return false;
+  for(let b=0;b<10;b++){
+    let ok = true;
+    for(let i=0;i<5;i++){
+      const need = (b + i) % 10;
+      if(!S.has(need)){ ok = false; break; }
+    }
+    if(ok) return true;
+  }
+  return false;
+}
+
+function classifyXiTo(d){
+  if(!Array.isArray(d) || d.length!==5) return '—';
+  const cnt={}; 
+  for(const x of d) cnt[x]=(cnt[x]||0)+1;
+  const counts = Object.values(cnt).sort((a,b)=>b-a);
+  if(counts[0]===5) return 'N';
+  if(counts[0]===4) return 'T';
+  if(counts[0]===3 && counts[1]===2) return 'C';
+  if(isStraightMod10AnyOrder(d)) return 'S';
+  if(counts[0]===3) return '3';
+  if(counts[0]===2 && counts[1]===2) return '2';
+  if(counts[0]===2) return '1';
+  return 'R';
+}
+
+function classifyNgau(d){
+  if(!Array.isArray(d) || d.length!==5) return '—';
+  if(new Set(d).size===1) return d[0]===0 ? 'H' : 'K';
+  let best=-1, found=false;
+  const combs=[[0,1,2],[0,1,3],[0,1,4],[0,2,3],[0,2,4],[0,3,4],[1,2,3],[1,2,4],[1,3,4],[2,3,4]];
+  for(const [a,b,c] of combs){
+    if((d[a]+d[b]+d[c])%10 !== 0) continue;
+    found = true;
+    const rem = [0,1,2,3,4].filter(x => ![a,b,c].includes(x));
+    const score = (d[rem[0]] + d[rem[1]]) % 10;
+    if(score === 0) return 'H';
+    if(score > best) best = score;
+  }
+  if(!found) return 'K';
+  return String(best);
+}
+
+function renderStats(data){
+  const nums = data.map(d => extractDb5(d)).filter(Boolean);
+  const posDigits=[[],[],[],[],[]];
+  const xi=[], ngau=[], sum5=[], sum3=[];
+  
+  for(const n of nums){
+    const arr = n.split('').map(Number);
+    arr.forEach((d,i)=> posDigits[i].push(d));
+    xi.push(classifyXiTo(arr));
+    ngau.push(classifyNgau(arr));
+    sum5.push(arr.reduce((a,b)=>a+b,0)%10);
+    sum3.push((arr[2]+arr[3]+arr[4])%10);
+  }
+
+  const container = document.getElementById('digit-lines');
+  container.innerHTML = '';
+  const names = ['C.ngàn','Ngàn','Trăm','Chục','Đơn vị','Xì tố','Ngầu','5tinh','Hậu tam'];
+  const dataRows = [...posDigits, xi, ngau, sum5, sum3];
+
+  dataRows.forEach((digits,i)=>{
+    const f = freq(digits.filter(v=>!isNaN(v)));
+    const line = document.createElement('div');
+    line.className = 'line';
+    if(names[i] === 'Xì tố') line.classList.add('xito');
+    const label = document.createElement('label'); 
+    label.textContent = names[i];
+    const seq = document.createElement('div'); 
+    seq.className = 'seq';
+    
+    digits.slice(0, showCount).forEach(d=>{
+      const val = (d===null || d===undefined) ? '—' : d.toString();
+      let cls = 'normal';
+      if(!isNaN(parseInt(val))) {
+        if(f.top.includes(+val)) cls='hot';
+        else if(f.bot.includes(+val)) cls='cold';
+      }
+      seq.innerHTML += `<span class="digit ${cls}">${val}</span>`;
+    });
+    line.append(label, seq);
+    container.appendChild(line);
+  });
+
+  renderPredictions(data);
+}
+
+// Dự đoán theo vị trí
+function duDoanTheoViTri(data) {
+  const nums = data.map(d => extractDb5(d)).filter(Boolean);
+  const posDigits = [[], [], [], [], []];
+  nums.forEach(n => {
+    const arr = n.split('').map(Number);
+    arr.forEach((d, i) => posDigits[i].push(d));
+  });
+  
+  const predictions = [];
+  const names = ['C.ngàn', 'Ngàn', 'Trăm', 'Chục', 'Đơn vị'];
+  posDigits.forEach((digits, i) => {
+    const f = freq(digits);
+    predictions.push(`${names[i]}: ${f.top.slice(0, 2).join(',')}`);
+  });
+  
+  return {
+    title: "Dự đoán theo Vị trí",
+    details: predictions.join(' • ')
+  };
+}
+
+// Dự đoán theo xu hướng 10 kỳ
+function duDoanTheoXuHuong(data) {
+  const recent = data.map(d => extractDb5(d)).filter(Boolean).slice(0, 10);
+  const allDigits = recent.join('').split('').map(Number);
+  const { top } = freq(allDigits);
+  
+  const last3 = recent.slice(0, 3).map(n => n.split('').map(Number).reduce((a,b) => a+b, 0));
+  const trend = last3[0] > last3[1] && last3[1] > last3[2] ? 'Giảm' : 
+                last3[0] < last3[1] && last3[1] < last3[2] ? 'Tăng' : 'Ổn định';
+  
+  return {
+    title: "Xu hướng 10 kỳ gần",
+    details: `Số nóng: ${top.slice(0, 3).join(',')} • Tổng ${trend}`
+  };
+}
+
+function duDoanSoThieu(data, mode = 'full') {
+  const nums = data.map(d => extractDb5(d)).filter(Boolean);
+  let digits = [];
+
+  switch (mode) {
+    case 'dedau':
+      digits = nums.map(n => n.slice(0, 2)).join('').split('').map(Number);
+      break;
+    case 'deduoi':
+      digits = nums.map(n => n.slice(-2)).join('').split('').map(Number);
+      break;
+    default:
+      digits = nums.join('').split('').map(Number);
+  }
+
+  const lastSeen = {};
+  digits.forEach((d, i) => { if (lastSeen[d] === undefined) lastSeen[d] = i; });
+
+  const missing = [];
+  for (let i = 0; i <= 9; i++) {
+    if (lastSeen[i] === undefined || lastSeen[i] > 20) missing.push(i);
+  }
+
+  return {
+    title: `Số thiếu (${mode})`,
+    details: missing.length ? `Số cần chú ý: ${missing.join(', ')}` : 'Tất cả số đã xuất hiện gần đây'
+  };
+}
+
+
+// Dự đoán Xì tố & Ngầu
+function duDoanXiToNgau(data) {
+  const recent = data.map(d => extractDb5(d)).filter(Boolean).slice(0, 20);
+  const xi = [], ngau = [];
+  
+  recent.forEach(n => {
+    const arr = n.split('').map(Number);
+    xi.push(classifyXiTo(arr));
+    let ngauVal = classifyNgau(arr);
+    // Chuyển K thành 0
+    if (ngauVal === 'K') ngauVal = '0';
+    ngau.push(ngauVal);
+  });
+  
+  const fXi = freq(xi);
+  const fNgau = freq(ngau);
+  
+  const xiHot = fXi.top.slice(0, 2).filter(x => !isNaN(x) && x !== null && x !== undefined && x !== '—');
+  const ngauHot = fNgau.top.slice(0, 2).filter(x => x !== null && x !== undefined && x !== '—');
+  
+  return {
+    title: "Xì tố & Ngầu (20 kỳ)",
+    details: `Xì tố hay ra: ${xiHot.length ? xiHot.join(',') : 'Chưa đủ dữ liệu'} • Ngầu hay ra: ${ngauHot.length ? ngauHot.join(',') : 'Chưa đủ dữ liệu'}`
+  };
+}
+// Dự đoán 2 số cuối
+function duDoan2SoCuoi(data) {
+  const recent = data.map(d => extractDb5(d)).filter(Boolean);
+  const last2Digits = recent.map(n => n.slice(-2));
+  
+  const f = {};
+  last2Digits.forEach(d => f[d] = (f[d] || 0) + 1);
+  
+  const sorted = Object.entries(f).sort((a, b) => b[1] - a[1]);
+  const hot = sorted.slice(0, 4).map(e => e[0]);
+  
+  const digit1 = [], digit2 = [];
+  last2Digits.forEach(d => {
+    digit1.push(+d[0]);
+    digit2.push(+d[1]);
+  });
+  
+  const f1 = freq(digit1);
+  const f2 = freq(digit2);
+  
+  const allHot = [...f1.top, ...f2.top];
+  const uniqueDigits = [...new Set(allHot)].slice(0, 6);
+  
+  const nihop = [];
+  uniqueDigits.forEach(a => {
+    uniqueDigits.forEach(b => {
+      nihop.push(`${a}${b}`);
+    });
+  });
+  
+  return {
+    title: "2 số cuối (Nhị hợp 36 cặp)",
+    details: `4 số nóng: ${hot.join(',')} • 6 chữ số: ${uniqueDigits.join(',')} • Nhị hợp: ${nihop.join(',')}`
+  };
+}
+// Dự đoán số thiếu - HÀNG TRĂM
+function duDoanSoThieuTram(data) {
+  const recent = data.map(d => extractDb5(d)).filter(Boolean);
+  const allDigits = recent.map(n => n[2]).join('').split('').map(Number);
+
+  // Ghi nhận lần xuất hiện đầu tiên
+  const lastSeen = {};
+  allDigits.forEach((d, idx) => {
+    if (lastSeen[d] === undefined) lastSeen[d] = idx;
+  });
+
+  // Xác định các số thiếu hoặc lâu ra
+  const missing = [];
+  for (let i = 0; i <= 9; i++) {
+    if (lastSeen[i] === undefined) missing.push(i);
+    else if (lastSeen[i] > 20) missing.push(i);
+  }
+
+  // === Thêm phần Top N + Dàn Nhị hợp (chỉ khi chọn Hàng trăm) ===
+  let top5Text = '';
+  const seen = {};
+  for (let i = 0; i < recent.length; i++) {
+    const n = recent[i];
+    const digit = parseInt(n[2]);
+    if (!isNaN(digit) && !(digit in seen)) {
+      seen[digit] = i;
+    }
+  }
+
+  const totalDraws = recent.length;
+  const list = [];
+  for (let d = 0; d <= 9; d++) {
+    const last = seen[d] !== undefined ? seen[d] : totalDraws;
+    list.push({ num: d, last });
+  }
+
+  // Lấy giá trị topN từ dropdown nếu có, mặc định 5
+  let topN = 5;
+  const sel = document.getElementById('topN');
+  if (sel) topN = parseInt(sel.value) || 5;
+
+  // Sắp xếp theo last giảm dần = số lâu ra nhất
+  const topList = list.sort((a, b) => b.last - a.last).slice(0, topN);
+  const topNums = topList.map(x => x.num);
+
+  // Sinh dàn Nhị hợp + đảo + loại trùng
+  const nhiHopPairs = [];
+  for (let i = 0; i < topNums.length; i++) {
+    for (let j = i ; j < topNums.length; j++) {
+      const a = topNums[i];
+      const b = topNums[j];
+      const pair = `${a}${b}`;
+      const pairRev = `${b}${a}`;
+      nhiHopPairs.push(pair, pairRev);
+    }
+  }
+  const uniquePairs = [...new Set(nhiHopPairs)];
+
+  top5Text =
+    `\nTop ${topN} số lâu ra: ${topNums.join(', ')}` +
+    `\nDàn Nhị hợp + đảo (${uniquePairs.length} số): ${uniquePairs.join(', ')}`;
+
+  return {
+    title: "Số thiếu - Hàng Trăm",
+    details: (missing.length ? `Số cần chú ý: ${missing.join(', ')}` : 'Tất cả số đã xuất hiện gần đây') + top5Text,
+    hasSelector: true
+  };
+}
+
+
+// ==================== HẾT PHẦN KHÔI PHỤC ====================
+
+function renderPredictions(data){
+  const section = document.getElementById('prediction-lines');
+  if(!section) return;
+  
+  // ✅ BỎ phần useData - data ĐÃ được cắt từ changeShift() rồi
+  
+  const methods = [
+
+  duDoanTheoViTri(data),
+  duDoanTheoXuHuong(data),
+  duDoanSoThieu(data, 'full'),
+  duDoanSoThieu(data, 'dedau'),
+  duDoanSoThieu(data, 'deduoi'),
+  duDoanSoThieuTram(data), // ← thay dòng này, gọi hàm riêng đã tách ra
+  duDoanXiToNgau(data),
+  duDoan2SoCuoi(data)
+];
+
+  let html = '<hr><div style="color:#facc15;font-weight:bold;margin:8px 0">📊 DỰ ĐOÁN KỲ TIẾP THEO</div>';
+  
+  methods.forEach(m => {
+    html += `<div style="margin:6px 0;padding:4px;background:#1e293b;border-radius:4px">
+      <b style="color:#60a5fa">${m.title}:</b> 
+      <span style="color:#e5e7eb">${m.details}</span>`;
+    
+    // Thêm selector cho dòng Hàng trăm
+    if (m.hasSelector) {
+      html += `<select id="topN" onchange="changeSoThieuMode()" 
+               style="margin-left:10px;background:#374151;color:#e5e7eb;border:1px solid #1f2937;border-radius:4px;padding:2px 6px">
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+      </select>`;
+    }
+    
+    html += '</div>';
+  });
+  
+  section.innerHTML = html;
+}
+
+function changeSoThieuMode() {
+  const data = window._cachedData || [];
+  renderPredictions(data);
+}
+
+
+const MB_COLUMNS = [
+  "Ngày","ĐB","G1","G2.1","G2.2","G3.1","G3.2","G3.3","G3.4","G3.5","G3.6",
+  "G4.1","G4.2","G4.3","G4.4","G5.1","G5.2","G5.3","G5.4",
+  "G5.5","G5.6","G6.1","G6.2","G6.3","G7.1","G7.2","G7.3","G7.4"
+];
+
+const HG_COLUMNS = [
+  "Ngày","ĐB","G.1","G.2","G.3-1","G.3-2",
+  "G.4-1","G.4-2","G.4-3","G.4-4","G.4-5","G.4-6","G.4-7",
+  "G.5","G.6-1","G.6-2","G.6-3","G.7","G.8"
+];
+
+
+async function loadApiData(){
+  const data = await fetchApiData();
+  if(!data.length) return;
+  window._cachedData = data;
+  currentShift = 0; // ✅ Reset lùi về 0 khi load dữ liệu mới
+  
+  // Cập nhật hiển thị số lùi
+  const topDisplay = document.getElementById("shift-display");
+  const topAiDisplay = document.getElementById("shift-display-top-ai");
+  if (topDisplay) topDisplay.textContent = 0;
+  if (topAiDisplay) topAiDisplay.textContent = 0;
+  
+  document.getElementById('data-input').value = data.map(x=>extractDb5(x)).join('\n');
+  renderStats(data);
+  renderDetailedResults(data);
+  
+  // ✅ TỰ ĐỘNG CHẠY AI KHI LOAD DỮ LIỆU MỚI
+  if (typeof runEnhancedAI === "function") {
+    runEnhancedAI();
+  }
+  
+  resultPage = 0;
+}
+async function updateStats(){
+  const data = await fetchApiData();
+  if(data.length) {
+    window._cachedData = data;
+    currentShift = 0; // ✅ Reset lùi về 0
+    
+    // Cập nhật hiển thị
+    const topDisplay = document.getElementById("shift-display");
+    const topAiDisplay = document.getElementById("shift-display-top-ai");
+    if (topDisplay) topDisplay.textContent = 0;
+    if (topAiDisplay) topAiDisplay.textContent = 0;
+    
+    renderStats(data);
+    renderDetailedResults(data);
+    
+    // ✅ TỰ ĐỘNG CHẠY AI
+    if (typeof runEnhancedAI === "function") {
+      runEnhancedAI();
+    }
+  }
+}
+
+function clearData(){
+  document.getElementById('data-input').value='';
+  document.getElementById('digit-lines').innerHTML='';
+  document.getElementById('prediction-lines').innerHTML='';
+  document.getElementById('detailed-results').innerHTML='';
+  resultPage = 0;
+}
+function changeShift(delta) {
+  // 1. Cập nhật chỉ số lùi
+  currentShift = Math.max(0, currentShift + delta);
+  
+  console.log('🔄 changeShift | Delta:', delta, '| currentShift:', currentShift);
+
+  // 2. Đồng bộ hiển thị
+  const topDisplay = document.getElementById("shift-display");
+  const topAiDisplay = document.getElementById("shift-display-top-ai");
+  if (topDisplay) topDisplay.textContent = currentShift;
+  if (topAiDisplay) topAiDisplay.textContent = currentShift;
+
+  // 3. Cắt dữ liệu theo shift
+  const cachedData = window._cachedData || [];
+  if (!cachedData.length) {
+    console.warn('⚠️ Không có cachedData');
+    return;
+  }
+  
+  const cutData = currentShift > 0 ? cachedData.slice(currentShift) : cachedData;
+  
+  console.log('📊 cutData length:', cutData.length);
+  
+  // 4. Cập nhật bảng thống kê
+  if (typeof renderStats === "function") {
+    renderStats(cutData);
+  }
+  
+  // 5. Chạy AI
+  if (typeof runEnhancedAI === "function") {
+    runEnhancedAI();
+  }
+  
+  // ✅ 6. CẬP NHẬT CẦU VỊ TRÍ
+  if (typeof renderCauViTri_ByLotoNextDay === "function") {
+    console.log('🔄 Gọi renderCauViTri_ByLotoNextDay...');
+    setTimeout(() => {
+      try {
+        renderCauViTri_ByLotoNextDay(currentShift);  // Truyền shiftParam để sync
+        console.log('✅ Đã cập nhật Cầu Vị Trí');
+      } catch(e) {
+        console.error('❌ Lỗi:', e);
+      }
+    }, 200);
+  } else {
+    console.error('❌ Hàm renderCauViTri_ByLotoNextDay không tồn tại!');
+  }
+
+  // ✅ FIX: EXPOSE GLOBAL CHO MODULE CẦU VỊ TRÍ (SYNC VỚI 2 VỊ TRÍ TRÊN)
+  window.currentShift = currentShift;
+}
+
+function changeResultPage(delta) {
+  resultPage = Math.max(0, resultPage + delta);
+  document.getElementById("result-page-display").textContent = `Trang ${resultPage + 1}`;
+  fetchApiData().then(data => {
+    if(data.length) renderDetailedResults(data);
+  });
+}
+
+function renderDetailedResults(data) {
+  const region = document.getElementById('region-select').value;
+  const container = document.getElementById('detailed-results');
+  
+  if (!data || !data.length) {
+    container.innerHTML = '<div style="color:#f87171;text-align:center">Không có dữ liệu</div>';
+    return;
+  }
+  
+  const startIdx = resultPage * 10;
+  const pageData = data.slice(startIdx, startIdx + 10);
+  
+  if (!pageData.length) {
+    container.innerHTML = '<div style="color:#f87171;text-align:center">Hết dữ liệu</div>';
+    return;
+  }
+  
+  let html = '';
+  
+  pageData.forEach(issue => {
+    const date = issue.turnNum || issue.openTime?.slice(0, 10) || '—';
+    const weekday = issue.openTime ? getVietnameseWeekday(issue.openTime) : '';
+    
+    let detail = [];
+    try {
+      if (typeof issue.detail === 'string') detail = JSON.parse(issue.detail);
+      else if (Array.isArray(issue.detail)) detail = issue.detail;
+    } catch (e) {
+      detail = [];
+    }
+    
+    html += `<div style="background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:12px;margin-bottom:15px">`;
+    html += `<div style="background:#1e3a5f;color:#facc15;font-weight:bold;padding:8px;border-radius:6px;margin-bottom:10px;text-align:center;font-size:14pt">${weekday} ngày ${date}</div>`;
+    
+    if (region === 'MB') {
+      const [gdb, g1, g2, g3, g4, g5, g6, g7] = detail;
+      
+      html += `<table style="width:100%;border-collapse:collapse;font-size:11pt">`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;width:120px;border:1px solid #1f2937">ĐẶC BIỆT</td><td style="background:#dc2626;color:#fff;padding:8px;text-align:center;font-size:16pt;font-weight:bold;border:1px solid #1f2937">${gdb || '—'}</td></tr>`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Nhất</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g1 || '—'}</td></tr>`;
+      
+      const g2s = (g2 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Nhì</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g2s.join(' - ')}</td></tr>`;
+      
+      const g3s = (g3 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Ba</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g3s.join(' - ')}</td></tr>`;
+      
+      const g4s = (g4 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Tư</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g4s.join(' - ')}</td></tr>`;
+      
+      const g5s = (g5 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Năm</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g5s.join(' - ')}</td></tr>`;
+      
+      const g6s = (g6 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Sáu</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g6s.join(' - ')}</td></tr>`;
+      
+      const g7s = (g7 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Bảy</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g7s.join(' - ')}</td></tr>`;
+      
+    } else {
+      // Miền Nam & Miền Trung (cùng format 8 giải)
+      const [gdb, g1, g2, g3, g4, g5, g6, g7, g8] = detail;
+      
+      html += `<table style="width:100%;border-collapse:collapse;font-size:11pt">`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;width:120px;border:1px solid #1f2937">ĐẶC BIỆT</td><td style="background:#dc2626;color:#fff;padding:8px;text-align:center;font-size:16pt;font-weight:bold;border:1px solid #1f2937">${gdb || '—'}</td></tr>`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Nhất</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g1 || '—'}</td></tr>`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Nhì</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g2 || '—'}</td></tr>`;
+      
+      const g3s = (g3 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Ba</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g3s.join(' - ')}</td></tr>`;
+      
+      const g4s = (g4 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Tư</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g4s.join(' - ')}</td></tr>`;
+      
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Năm</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g5 || '—'}</td></tr>`;
+      
+      const g6s = (g6 || '').split(',');
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Sáu</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g6s.join(' - ')}</td></tr>`;
+      
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Bảy</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g7 || '—'}</td></tr>`;
+      html += `<tr><td style="background:#374151;color:#facc15;padding:8px;font-weight:bold;border:1px solid #1f2937">Giải Tám</td><td style="padding:8px;text-align:center;border:1px solid #1f2937">${g8 || '—'}</td></tr>`;
+    }
+    
+    html += `</table></div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+function getVietnameseWeekday(dateStr) {
+  const date = new Date(dateStr);
+  const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+  return days[date.getDay()];
+}
+// ========== AI ANALYSIS FUNCTIONS ==========
+
+function toggleAIModule() {
+    const module = document.querySelector('.ai-module');
+    const button = document.querySelector('.ai-header button');
+    
+    if (aiModuleVisible) {
+        module.style.display = 'none';
+        button.textContent = 'Hiện';
+        button.style.background = '#10b981';
+    } else {
+        module.style.display = 'block';
+        button.textContent = 'Ẩn';
+        button.style.background = '#dc2626';
+    }
+    aiModuleVisible = !aiModuleVisible;
+}
+
+
+
+async function updateBacktestView() {
+  const shift = currentShift;
+  const resultDiv = document.getElementById("result-table");
+  resultDiv.innerHTML = `<div style="color:#60a5fa">🔍 Đang xử lý dữ liệu (lùi ${shift} kỳ)...</div>`;
+
+  try {
+    let text = document.getElementById("data-input").value.trim();
+    let all = [];
+
+    if (text) {
+      const lines = text.split(/\s+/);
+      all = lines.map(db5 => ({ openNum: db5 }));
+    } else {
+      const data = await fetchApiData();
+      all = data.map(d => ({ openNum: extractDb5(d) })).filter(x => x.openNum);
+    }
+
+    if (!all.length) {
+      resultDiv.innerHTML = `<div style="color:#f87171">⚠️ Không có dữ liệu.</div>`;
+      return;
+    }
+
+    const cutData = shift > 0 ? all.slice(shift) : all;
+    renderStats(cutData);
+
+    resultDiv.innerHTML = `<div style="color:#facc15;margin-top:8px">📊 Hiển thị dữ liệu lùi ${shift} kỳ (${cutData.length} kỳ)</div>`;
+  } catch (err) {
+    resultDiv.innerHTML = `<div style="color:#f87171">❌ Lỗi: ${err.message}</div>`;
+  }
+}
+
+
+// Tự động chọn Thứ theo ngày hiện tại
+function autoSelectThu() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=CN, 1=T2, 2=T3,..., 6=T7
+  
+  const thuMap = {
+    0: 'CN',
+    1: '2',
+    2: '3',
+    3: '4',
+    4: '5',
+    5: '6',
+    6: '7'
+  };
+  
+  const thuSelect = document.getElementById('thu-select');
+  const thuValue = thuMap[dayOfWeek];
+  
+  if (thuValue) {
+    thuSelect.value = thuValue;
+    updateDaiOptions();
+  }
+}
+
+function safeRenderDetailedResults() {
+  if (window._cachedData) renderDetailedResults(window._cachedData);
+}
+document.getElementById('region-select').addEventListener('change', safeRenderDetailedResults);
+document.getElementById('thu-select').addEventListener('change', safeRenderDetailedResults);
+document.getElementById('dai-select').addEventListener('change', safeRenderDetailedResults);
+
+
+updateDaiOptions();
+autoSelectThu(); // Tự động chọn Thứ khi load trang
+
+
+
+// ================== DỰ ĐOÁN CẦU LÔ / ĐỀ ==================
+async function runEnhancedAI() {
+  const dai = document.getElementById('dai-select').value;
+  const period = parseInt(document.getElementById('ai-period-new').value) || 30;
+  const backtestCount = parseInt(document.getElementById('backtest-count').value) || 10;
+
+  if (!dai) {
+    alert("⚠️ Chưa chọn Đài!");
+    return;
+  }
+
+  const resultDiv = document.getElementById('ai-result');
+  resultDiv.innerHTML = '<div class="ai-loading">🤖 AI đang phân tích dữ liệu và chạy backtest...</div>';
+
+  const data = await fetchApiData();
+  if (!data.length) {
+    resultDiv.innerHTML = '<div class="ai-error">⚠️ Không có dữ liệu</div>';
+    return;
+  }
+
+	let db5List = data.map(d => extractDb5(d)).filter(Boolean);
+
+	// ✨ CẮT THEO DỮ LIỆU LÙI
+	if (currentShift > 0) {
+	  db5List = db5List.slice(currentShift);
+	}
+
+  
+  if (db5List.length < period + backtestCount) {
+    resultDiv.innerHTML = `<div class="ai-error">⚠️ Cần ít nhất ${period + backtestCount} kỳ dữ liệu</div>`;
+    return;
+  }
+
+  // Dự đoán cho kỳ tiếp theo
+  const seqsMain = buildSequences(db5List.slice(0, period));
+  const K = 4;
+  const ensemble = ensembleM1ToM6(seqsMain, K);
+  
+  // Chạy backtest
+  const backtestResults = runBacktestAI(db5List, period, backtestCount, K);
+  
+  // Hiển thị kết quả
+  displayEnhancedAIResult(ensemble, backtestResults, period, backtestCount);
+}
+// Hàm backtest AI
+function runBacktestAI(db5List, period, backtestCount, K) {
+  const results = [];
+  
+  for (let i = 0; i < backtestCount; i++) {
+	const trainData = db5List.slice(i + 1, i + 1 + period); // Lấy từ i+1 đến i+1+period
+	const actualNext = db5List[i];                          // Lấy kỳ i (gần hơn)
+    
+    if (!actualNext) break;
+    
+    const seqs = buildSequences(trainData);
+    const ensemble = ensembleM1ToM6(seqs, K);
+    
+    const actualDigits = actualNext.split('').map(Number);
+    let correctCount = 0;
+    
+    for (let p = 0; p < 5; p++) {
+      if (ensemble.final[p].includes(actualDigits[p])) {
+        correctCount++;
+      }
+    }
+    
+    results.push({
+      period: i + 1,
+      actual: actualNext,
+      predicted: ensemble.final,
+      correctCount: correctCount,
+      accuracy: (correctCount / 5 * 100).toFixed(1)
+    });
+  }
+  
+  return results;
+}
+function displayEnhancedAIResult(ensemble, backtestResults, period, backtestCount) {
+  const div = document.getElementById('ai-result');
+  const posNames = ['Vạn', 'Nghìn', 'Trăm', 'Chục', 'Đơn vị'];
+  
+  let html = `<h3 style="color:#fbbf24;margin:0 0 15px 0">🎯 DỰ ĐOÁN CHO KỲ TIẾP THEO</h3>`;
+  
+  // Bảng dự đoán
+  html += `<table class="result-table">`;
+  html += `<tr><th>Vị trí</th><th style="background:#8b5cf6;color:#fff;font-size:13pt">DỰ ĐOÁN (Top 4)</th></tr>`;
+  
+  for (let p = 0; p < 5; p++) {
+    html += `<tr>`;
+    html += `<td style="background:#374151;color:#facc15;font-weight:bold">${posNames[p]}</td>`;
+    html += `<td style="background:#1e3a8a;color:#fbbf24;font-weight:bold;font-size:12pt">${ensemble.final[p].join(' ')}</td>`;
+    html += `</tr>`;
+  }
+  html += `</table>`;
+  
+const finalStr = ensemble.final.map(arr => arr.join('')).join(' - ');
+html += `<div class="top-numbers">🔥 Kết quả dự đoán: <b>${finalStr}</b></div>`;
+
+// Đếm tần suất các chữ số
+const digitFreq = {};
+for (let p = 0; p < 5; p++) {
+  ensemble.final[p].forEach(d => {
+    digitFreq[d] = (digitFreq[d] || 0) + 1;
+  });
+}
+
+// Sắp xếp theo tần suất giảm dần
+const sortedDigits = Object.entries(digitFreq)
+  .map(([digit, count]) => ({ digit: +digit, count }))
+  .sort((a, b) => b.count - a.count || a.digit - b.digit);
+
+const top5Digits = sortedDigits.slice(0, 5).map(x => x.digit);
+
+// Hiển thị tần suất
+html += `<div style="margin:15px 0;padding:12px;background:#1e293b;border-radius:6px;border-left:4px solid #60a5fa">
+  <div style="color:#60a5fa;font-weight:bold;margin-bottom:8px">📊 THỐNG KÊ TẦN SUẤT CÁC CHỮ SỐ:</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">`;
+
+sortedDigits.forEach((item, idx) => {
+  const isTop5 = idx < 5;
+  const bgColor = isTop5 ? '#dc2626' : '#374151';
+  const textColor = isTop5 ? '#fff' : '#9ca3af';
+  const fontWeight = isTop5 ? 'bold' : 'normal';
+  
+  html += `<div style="background:${bgColor};color:${textColor};padding:8px 12px;border-radius:6px;font-weight:${fontWeight};min-width:60px;text-align:center">
+    <div style="font-size:16pt">${item.digit}</div>
+    <div style="font-size:9pt;margin-top:2px">${item.count} lần</div>
+  </div>`;
+});
+
+html += `</div>
+  <div style="margin-top:10px;font-size:10px;color:#9ca3af">
+    <span style="color:#ef4444;font-weight:bold">■</span> Top 5 số xuất hiện nhiều nhất: 
+    <b style="color:#fbbf24">${top5Digits.join(', ')}</b>
+  </div>
+</div>`;
+
+// BACKTEST
+html += `<hr style="margin:20px 0;border-color:#374151">`;
+  html += `<h3 style="color:#60a5fa;margin:15px 0">🧪 KẾT QUẢ BACKTEST (${backtestCount} kỳ gần nhất)</h3>`;
+  
+  const avgAccuracy = (backtestResults.reduce((sum, r) => sum + parseFloat(r.accuracy), 0) / backtestResults.length).toFixed(1);
+  const totalCorrect = backtestResults.reduce((sum, r) => sum + r.correctCount, 0);
+  const totalPossible = backtestResults.length * 5;
+  
+  html += `<div class="backtest-section">
+    <div class="backtest-stats">
+      <div class="stat-box">
+        <div class="stat-value">${avgAccuracy}%</div>
+        <div class="stat-label">Độ chính xác TB</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${totalCorrect}/${totalPossible}</div>
+        <div class="stat-label">Tổng số trúng</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${backtestResults.filter(r => parseFloat(r.accuracy) >= 60).length}</div>
+        <div class="stat-label">Kỳ trúng ≥60%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${backtestResults.filter(r => parseFloat(r.accuracy) === 100).length}</div>
+        <div class="stat-label">Kỳ trúng 100%</div>
+      </div>
+    </div>
+  </div>`;
+  
+  // Bảng chi tiết
+  html += `<table class="result-table" style="margin-top:15px;font-size:10px">`;
+  html += `<tr><th>Kỳ</th><th>Số thực tế</th><th>Số trúng</th><th>Độ chính xác</th><th>Chi tiết</th></tr>`;
+  
+  backtestResults.forEach((r, idx) => {
+    const actualDigits = r.actual.split('').map(Number);
+    let detailStr = '';
+    
+    for (let p = 0; p < 5; p++) {
+      const isCorrect = r.predicted[p].includes(actualDigits[p]);
+      const color = isCorrect ? '#10b981' : '#ef4444';
+      detailStr += `<span style="color:${color};font-weight:bold">${actualDigits[p]}</span> `;
+    }
+    
+    const rowClass = parseFloat(r.accuracy) >= 80 ? 'hot' : parseFloat(r.accuracy) >= 60 ? 'medium' : '';
+    
+    html += `<tr class="${rowClass}">
+      <td>${backtestCount - idx}</td>
+      <td style="font-weight:bold;letter-spacing:2px">${r.actual}</td>
+      <td style="font-weight:bold">${r.correctCount}/5</td>
+      <td style="font-weight:bold">${r.accuracy}%</td>
+      <td style="letter-spacing:3px">${detailStr}</td>
+    </tr>`;
+  });
+  
+  html += `</table>`;
+  
+  // Nút chi tiết
+  html += `<div style="text-align:center;margin:20px 0">
+    <button onclick="toggleDetailedMethods()" id="toggle-methods-btn" 
+      style="background:#6366f1;color:white;padding:8px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600">
+      🔬 Xem chi tiết 6 phương pháp
+    </button>
+  </div>`;
+  
+  html += `<div id="detailed-methods" style="display:none"></div>`;
+  div.innerHTML = html;
+  window.currentEnsemble = ensemble;
+}
+
+
+function copyAIResults() {
+  const resultDiv = document.getElementById('ai-result');
+  const table = resultDiv.querySelector('table');
+  
+  if (!table) {
+    alert('⚠️ Chưa có kết quả để copy');
+    return;
+  }
+  
+  let text = '';
+  const rows = table.querySelectorAll('tr');
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td, th');
+    const rowText = Array.from(cells).map(cell => cell.textContent.trim()).join('\t');
+    text += rowText + '\n';
+  });
+  
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✅ Đã copy bảng kết quả!');
+  }).catch(err => {
+    alert('⚠️ Lỗi copy: ' + err);
+  });
+}
+
+// ================== KẾT THÚC ==================
+// ==================== PYTHON AI LOGIC - M1 đến M6 ====================
+
+// ========== M1: HAZARD (Tỷ lệ rủi ro) ==========
+function computeM1Hazard(seqs, K = 4) {
+  const hazard = [];
+  for (let p = 0; p < 5; p++) {
+    const scores = [];
+    for (let d = 0; d <= 9; d++) {
+      const count = seqs[p].filter(x => x === d).length;
+      const total = seqs[p].length;
+      const ratio = total > 0 ? count / total : 0;
+      scores.push({ digit: d, score: ratio });
+    }
+    scores.sort((a, b) => b.score - a.score);
+    hazard.push(scores.slice(0, K).map(x => x.digit));
+  }
+  return hazard;
+}
+
+// ========== M2: THEO NGẦU ==========
+function computeM2Ngau(seqs, ngauTokens, K = 4) {
+  const lastNgau = ngauTokens[0];
+  const condNgau = {};
+
+  for (let i = 0; i < ngauTokens.length - 1; i++) {
+    const prevNg = ngauTokens[i];
+    if (!condNgau[prevNg]) condNgau[prevNg] = [[], [], [], [], []];
+
+    for (let p = 0; p < 5; p++) {
+      const d = seqs[p][i + 1];
+      if (d >= 0 && d <= 9) {
+        condNgau[prevNg][p].push(d);
+      }
+    }
+  }
+
+  const freqN = [];
+  for (let p = 0; p < 5; p++) {
+    const f = {};
+    seqs[p].forEach(v => {
+      if (v >= 0 && v <= 9) f[v] = (f[v] || 0) + 1;
+    });
+    freqN.push(f);
+  }
+
+  const useData = condNgau[lastNgau] || freqN.map(() => []);
+  const m2TopK = [];
+
+  for (let p = 0; p < 5; p++) {
+    const freq = {};
+    (useData[p] || []).forEach(d => {
+      freq[d] = (freq[d] || 0) + 1;
+    });
+
+    if (Object.keys(freq).length === 0) {
+      freq[0] = 1;
+    }
+
+    const sorted = Object.entries(freq)
+      .map(([d, cnt]) => ({ digit: +d, count: cnt }))
+      .sort((a, b) => b.count - a.count);
+
+    m2TopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+
+  return m2TopK;
+}
+
+
+// ========== M3: THEO XÌ TỐ ==========
+function computeM3XiTo(seqs, xiTokens, K = 4) {
+  const lastXi = xiTokens[0];
+  const condXi = {};
+  
+  const xiValues = { '1': 1, '2': 2, '3': 3, 'C': 4, 'T': 5, 'N': 6 };
+  
+  for (let i = 0; i < xiTokens.length - 1; i++) {
+    const prevXi = xiTokens[i];
+    if (!condXi[prevXi]) condXi[prevXi] = [[], [], [], [], []];
+    
+    for (let p = 0; p < 5; p++) {
+      const d = seqs[p][i + 1];
+      if (d >= 0 && d <= 9) {
+        condXi[prevXi][p].push(d);
+      }
+    }
+  }
+  
+  const freqN = [];
+  for (let p = 0; p < 5; p++) {
+    const f = {};
+    seqs[p].forEach(v => { if (v >= 0 && v <= 9) f[v] = (f[v] || 0) + 1; });
+    freqN.push(f);
+  }
+  
+  const useData = condXi[lastXi] || freqN.map(() => []);
+  const m3TopK = [];
+  
+  for (let p = 0; p < 5; p++) {
+    const freq = {};
+    (useData[p] || []).forEach(d => freq[d] = (freq[d] || 0) + 1);
+    
+    if (Object.keys(freq).length === 0) {
+      freq[0] = 1;
+    }
+    
+    const sorted = Object.entries(freq)
+      .map(([d, cnt]) => ({ digit: +d, count: cnt }))
+      .sort((a, b) => b.count - a.count);
+    
+    m3TopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+  
+  return m3TopK;
+}
+
+// ========== M4: TẦN SUẤT ==========
+function computeM4Frequency(seqs, K = 4) {
+  const m4TopK = [];
+  
+  for (let p = 0; p < 5; p++) {
+    const freq = {};
+    seqs[p].forEach(d => {
+      if (d >= 0 && d <= 9) freq[d] = (freq[d] || 0) + 1;
+    });
+    
+    const sorted = Object.entries(freq)
+      .map(([d, cnt]) => ({ digit: +d, count: cnt }))
+      .sort((a, b) => b.count - a.count);
+    
+    m4TopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+  
+  return m4TopK;
+}
+
+// ========== M5: CHUYỂN (LAG CORRELATION) ==========
+function computeM5Chuyen(seqs, K = 4) {
+  const M5_LAG = 2;
+  const M5_SMOOTH = 0.8;
+  
+  const M5_SRC_TO_TARGETS = {
+    0: [1, 2, 3, 4], 1: [0, 2, 3, 4], 2: [0, 1, 3, 4],
+    3: [0, 1, 2, 4], 4: [0, 1, 2, 3],
+    5: [6, 7, 8, 9], 6: [5, 7, 8, 9], 7: [5, 6, 8, 9],
+    8: [5, 6, 7, 9], 9: [5, 6, 7, 8]
+  };
+  
+  const m5Scores = [];
+  for (let p = 0; p < 5; p++) {
+    m5Scores.push(Array(10).fill(0));
+  }
+  
+  const invTargets = {};
+  for (let tgt = 0; tgt < 5; tgt++) {
+    invTargets[tgt] = [];
+  }
+  
+  for (const [src, tgts] of Object.entries(M5_SRC_TO_TARGETS)) {
+    tgts.forEach(tg => {
+      if (tg >= 0 && tg <= 4) invTargets[tg].push(+src);
+    });
+  }
+  
+  for (let tgt = 0; tgt < 5; tgt++) {
+    const srcList = invTargets[tgt] || [];
+    
+    for (const src of srcList) {
+      for (let lag = 1; lag <= Math.min(M5_LAG, seqs[tgt].length - 1); lag++) {
+        for (let i = 0; i < seqs[tgt].length - lag; i++) {
+          const d_t = seqs[tgt][i];
+          const d_s = seqs[src] && seqs[src][i + lag];
+          
+          if (d_t >= 0 && d_t <= 9 && d_s >= 0 && d_s <= 9 && d_t === d_s) {
+            m5Scores[tgt][d_t] += 1.0;
+          }
+        }
+      }
+    }
+  }
+  
+  const freqN = [];
+  for (let p = 0; p < 5; p++) {
+    const f = {};
+    seqs[p].forEach(v => { if (v >= 0 && v <= 9) f[v] = (f[v] || 0) + 1; });
+    freqN.push(f);
+  }
+  
+  for (let p = 0; p < 5; p++) {
+    for (let d = 0; d <= 9; d++) {
+      m5Scores[p][d] += M5_SMOOTH * (freqN[p][d] || 0);
+    }
+  }
+  
+  const m5TopK = [];
+  for (let p = 0; p < 5; p++) {
+    const sorted = m5Scores[p]
+      .map((score, d) => ({ digit: d, score }))
+      .sort((a, b) => b.score - a.score);
+    
+    m5TopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+  
+  return m5TopK;
+}
+
+// ========== M6: BỘ 4→2 (PATTERN GROUPS) ==========
+function computeM6Groups(seqs, K = 4) {
+  const M6_GROUPS = [
+    [0, 1, 3, 7], [0, 2, 6, 9], [2, 4, 5, 7], [1, 3, 4, 6],
+    [6, 8, 9], [0, 1, 2, 4], [0, 4, 8, 6], [1, 5, 9, 2]
+  ];
+  const M6_HORIZON = [2, 3];
+  
+  const pool = {};
+  const upto = Math.min(Math.max(...M6_HORIZON), seqs[0].length);
+  
+  for (let j = 0; j < upto; j++) {
+    const col = seqs.map(s => s[j]);
+    const S = new Set(col);
+    
+    for (const G of M6_GROUPS) {
+      const intersection = G.filter(x => S.has(x));
+      if (intersection.length === 2) {
+        G.forEach(d => {
+          if (!S.has(d)) {
+            pool[d] = (pool[d] || 0) + 1;
+          }
+        });
+      }
+    }
+  }
+  
+  const freqN = [];
+  for (let p = 0; p < 5; p++) {
+    const f = {};
+    seqs[p].forEach(v => { if (v >= 0 && v <= 9) f[v] = (f[v] || 0) + 1; });
+    freqN.push(f);
+  }
+  
+  const m6Scores = [];
+  for (let p = 0; p < 5; p++) {
+    const scores = [];
+    for (let d = 0; d <= 9; d++) {
+      scores.push((pool[d] || 0) + 0.05 * (freqN[p][d] || 0));
+    }
+    m6Scores.push(scores);
+  }
+  
+  const m6TopK = [];
+  for (let p = 0; p < 5; p++) {
+    const sorted = m6Scores[p]
+      .map((score, d) => ({ digit: d, score }))
+      .sort((a, b) => b.score - a.score);
+    
+    m6TopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+  
+  return m6TopK;
+}
+
+// ========== BUILD TOKENS (XÌ TỐ & NGẦU) ==========
+function buildTokens(seqs) {
+  const xiTokens = [];
+  const ngauTokens = [];
+  
+  const L = seqs[0].length;
+  
+  for (let i = 0; i < L; i++) {
+    const col = seqs.map(s => s[i]);
+    xiTokens.push(classifyXiTo(col));
+    ngauTokens.push(classifyNgau(col));
+  }
+  
+  return { xiTokens, ngauTokens };
+}
+
+// ========== ENSEMBLE: KẾT HỢP M1-M6 ==========
+function ensembleM1ToM6(seqs, K = 4) {
+  const { xiTokens, ngauTokens } = buildTokens(seqs);
+  
+  const m1 = computeM1Hazard(seqs, K);
+  const m2 = computeM2Ngau(seqs, ngauTokens, K);
+  const m3 = computeM3XiTo(seqs, xiTokens, K);
+  const m4 = computeM4Frequency(seqs, K);
+  const m5 = computeM5Chuyen(seqs, K);
+  const m6 = computeM6Groups(seqs, K);
+  
+  const methods = [m1, m2, m3, m4, m5, m6];
+  const finalTopK = [];
+  
+  for (let p = 0; p < 5; p++) {
+    const votes = {};
+    
+    methods.forEach(method => {
+      method[p].forEach(d => {
+        votes[d] = (votes[d] || 0) + 1;
+      });
+    });
+    
+    const sorted = Object.entries(votes)
+      .map(([d, cnt]) => ({ digit: +d, count: cnt }))
+      .sort((a, b) => b.count - a.count || a.digit - b.digit);
+    
+    finalTopK.push(sorted.slice(0, K).map(x => x.digit));
+  }
+  
+  return {
+    m1, m2, m3, m4, m5, m6,
+    final: finalTopK,
+    xiTokens,
+    ngauTokens
+  };
+}
+
+// ========== BUILD SEQUENCES FROM DATA ==========
+function buildSequences(data) {
+  const seqs = [[], [], [], [], []];
+  
+  data.forEach(num => {
+    if (num && num.length === 5) {
+      for (let i = 0; i < 5; i++) {
+        seqs[i].push(parseInt(num[i]));
+      }
+    }
+  });
+  
+  return seqs;
+}
+// Hiển thị chi tiết M1-M6
+function showDetailedMethods(ensemble) {
+  const posNames = ['Vạn', 'Nghìn', 'Trăm', 'Chục', 'Đơn vị'];
+  
+  let html = '<hr style="margin:20px 0;border-color:#374151">';
+  html += '<h3 style="color:#a78bfa;margin:15px 0">🔬 CHI TIẾT 6 PHƯƠNG PHÁP</h3>';
+  html += '<div class="algo-comparison">';
+  
+  const methods = [
+    { name: 'M1: Hazard', data: ensemble.m1, desc: 'Tỷ lệ xuất hiện' },
+    { name: 'M2: Ngâu', data: ensemble.m2, desc: 'Theo ngâu trước' },
+    { name: 'M3: Xì tố', data: ensemble.m3, desc: 'Theo xì tố trước' },
+    { name: 'M4: Tần suất', data: ensemble.m4, desc: 'Số hot nhất' },
+    { name: 'M5: Chuyển', data: ensemble.m5, desc: 'Lag correlation' },
+    { name: 'M6: Bộ 4→2', data: ensemble.m6, desc: 'Pattern groups' }
+  ];
+  
+  methods.forEach(method => {
+    html += '<div class="algo-card">';
+    html += `<div class="algo-title">${method.name}</div>`;
+    html += `<div style="font-size:9px;color:#9ca3af;margin-bottom:8px">${method.desc}</div>`;
+    
+    for (let p = 0; p < 5; p++) {
+      html += `<div class="algo-result">
+        <span style="color:#93c5fd">${posNames[p]}:</span> 
+        <span style="color:#fbbf24;font-weight:bold">${method.data[p].join(' ')}</span>
+      </div>`;
+    }
+    html += '</div>';
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+// Toggle hiển thị
+function toggleDetailedMethods() {
+  const detailDiv = document.getElementById('detailed-methods');
+  const btn = document.getElementById('toggle-methods-btn');
+  
+  if (!window.currentEnsemble) return;
+  
+  if (detailDiv.style.display === 'none') {
+    detailDiv.innerHTML = showDetailedMethods(window.currentEnsemble);
+    detailDiv.style.display = 'block';
+    btn.textContent = '🔼 Ẩn chi tiết';
+  } else {
+    detailDiv.style.display = 'none';
+    btn.textContent = '🔬 Xem chi tiết 6 phương pháp';
+  }
+}
+
+</script>
+<script>
+// ✅ TỰ ĐỘNG CHẠY AI KHI ĐỔI ĐÀI
+document.getElementById('dai-select').addEventListener('change', async function() {
+  // Tải dữ liệu mới
+  const data = await fetchApiData();
+  if (!data.length) return;
+  
+  window._cachedData = data;
+  currentShift = 0;
+  
+  // Cập nhật hiển thị
+  document.getElementById("shift-display").textContent = 0;
+  document.getElementById("shift-display-top-ai").textContent = 0;
+  
+  document.getElementById('data-input').value = data.map(x=>extractDb5(x)).join('\n');
+  renderStats(data);
+  renderDetailedResults(data);
+  
+  // Chạy AI
+  if (typeof runEnhancedAI === "function") {
+    runEnhancedAI();
+  }
+});
+
+</script>
+
+<!-- ==================== SCRIPT 2: Tự động chạy AI khi đổi đài ==================== -->
+<script>
+document.getElementById('dai-select').addEventListener('change', async function() {
+  const data = await fetchApiData();
+  if (!data.length) return;
+  
+  window._cachedData = data;
+  currentShift = 0;
+  
+  document.getElementById("shift-display").textContent = 0;
+  document.getElementById("shift-display-top-ai").textContent = 0;
+  
+  document.getElementById('data-input').value = data.map(x=>extractDb5(x)).join('\n');
+  renderStats(data);
+  renderDetailedResults(data);
+  
+  if (typeof runEnhancedAI === "function") {
+    runEnhancedAI();
+  }
+});
+</script>
+
+<!-- ==================== MÔ-ĐUN CẦU VỊ TRÍ - ĐÃ SỬA LỖI ==================== -->
+<script>
+console.log('✅ Module Cầu Vị Trí bắt đầu load');
+
+/* Lấy danh sách db5 hiển thị */
+function getDisplayedDb5List() {
+  const shift = Math.max(0, window.currentShift || 0);
+  const txt = (document.getElementById('data-input')||{}).value || '';
+  if (txt.trim()) {
+    const lines = txt.trim().split(/\s+/);
+    return shift > 0 ? lines.slice(shift) : lines;
+  }
+  const all = (window._cachedData || []).slice();
+  const db5List = all.map(d => {
+    try {
+      if (typeof extractDb5 === 'function') return extractDb5(d) || (d.openNum||'');
+    } catch(e){}
+    return d.openNum || '';
+  }).filter(Boolean);
+  return shift > 0 ? db5List.slice(shift) : db5List;
+}
+
+/* Tách 27 lô từ detail */
+function extractLotosFromDb5OrDetail(item) {
+  if (!item) return [];
+  
+  if (item.detail) {
+    let detail = item.detail;
+    if (typeof detail === 'string') {
+      try { detail = JSON.parse(detail); } catch { detail = []; }
+    }
+    if (Array.isArray(detail)) {
+      const lotos = detail.map(g => (''+g).replace(/\D/g,'').slice(-2)).filter(x=>x.length===2);
+      return lotos;
+    }
+  }
+  
+  if (item.openNum) {
+    const lines = (''+item.openNum).trim().split(/\s+/);
+    if (lines.length === 27) return lines.map(s=>(''+s).replace(/\D/g,'').slice(-2));
+  }
+  
+  return [];
+}
+
+/* Xây dựng mảng digits và lotos */
+function buildDigitsAndLotos(db5ListRaw) {
+  console.log('🔧 BUILD DATA - Số kỳ:', db5ListRaw.length);
+  
+  const digitsByDay = [];
+  const lotosByDay = [];
+
+  for (let idx = 0; idx < db5ListRaw.length; idx++) {
+    const raw = db5ListRaw[idx];
+    
+    if (typeof raw === 'object') {
+      const lots = extractLotosFromDb5OrDetail(raw);
+      lotosByDay.push(lots);
+      
+      let detail = raw.detail;
+      if (typeof detail === 'string') {
+        try { detail = JSON.parse(detail); } catch { detail = null; }
+      }
+      if (Array.isArray(detail)) {
+        const joined = detail.join('').replace(/\D/g,'');
+        digitsByDay.push(joined.split('').map(Number));
+      } else if (raw.openNum) {
+        const s = (''+raw.openNum).replace(/\D/g,'');
+        digitsByDay.push(s.split('').map(Number));
+      } else {
+        digitsByDay.push([]);
+      }
+    } else {
+      lotosByDay.push([]);
+      digitsByDay.push([]);
+    }
+  }
+
+  console.log('✅ Digits:', digitsByDay.length, 'ngày | Lotos:', lotosByDay.length, 'ngày');
+  console.log('📊 Mẫu digits[0] length:', digitsByDay[0]?.length);
+  console.log('📊 Mẫu lotos[0] length:', lotosByDay[0]?.length);
+  
+  return { digitsByDay, lotosByDay };
+}
+/* ✅ RENDER CẦU VỊ TRÍ - NHẬN THAM SỐ SHIFT (VÀ SYNC GLOBAL) */
+function renderCauViTri_ByLotoNextDay(shiftParam) {
+  console.log('🚀 BẮT ĐẦU RENDER CẦU VỊ TRÍ');
+
+  // ✅ 1. XÓA KẾT QUẢ CŨ
+  const oldSection = document.getElementById('cau-vi-tri-section');
+  if (oldSection) {
+    oldSection.remove();
+    console.log('🗑️ Đã xóa kết quả cũ');
+  }
+
+  // ✅ 2. LẤY DỮ LIỆU GỐC
+  const sourceRaw = window._cachedData || [];
+  if (!sourceRaw.length) {
+    console.warn('⚠️ Không có _cachedData');
+    return;
+  }
+
+  // ✅ 3. SYNC SHIFT: ƯU TIÊN PARAM, FALLBACK GLOBAL CURRENTSHIFT
+  let currentShift = 0;
+  if (typeof shiftParam === 'number' && shiftParam >= 0) {
+    currentShift = shiftParam;
+  } else {
+    currentShift = typeof window.currentShift !== 'undefined' ? window.currentShift : (typeof currentShift !== 'undefined' ? currentShift : 0);
+  }
+  // SYNC DISPLAYS NẾU CẦN (ĐỒNG BỘ VỚI 2 VỊ TRÍ TRÊN)
+  const topDisplay = document.getElementById("shift-display");
+  const topAiDisplay = document.getElementById("shift-display-top-ai");
+  if (topDisplay) topDisplay.textContent = currentShift;
+  if (topAiDisplay) topAiDisplay.textContent = currentShift;
+
+  const cutData = currentShift > 0 ? sourceRaw.slice(currentShift) : sourceRaw;
+
+  console.log('📦 Dữ liệu gốc:', sourceRaw.length, 'kỳ');
+  console.log('📦 Shift nhận được:', shiftParam, '| Shift sử dụng:', currentShift, '| Dữ liệu sau cắt:', cutData.length, 'kỳ');
+
+  if (cutData.length < 6) {
+    console.warn('⚠️ Không đủ dữ liệu (cần ≥6 kỳ)');
+    return;
+  }
+
+  // ✅ 4. KIỂM TRA NGÀY ĐẦU
+  if (cutData[0]) {
+    console.log('📅 Ngày đầu sau lùi:', cutData[0].turnNum || cutData[0].openTime?.slice(0,10));
+  }
+
+  // ✅ 5. BUILD DIGITS VÀ LOTOS (VỚI PADDING ĐỂ TRÁNH INDEX ERROR)
+  const { digitsByDay, lotosByDay } = buildDigitsAndLotos(cutData);
+  const region = (document.getElementById('region-select')||{}).value || 'MB';
+  const maxDigits = region === 'MB' ? 107 : 84;
+  const days = Math.min(digitsByDay.length, 15);
+
+  // PAD ARRAYS NẾU CẦN (ĐỔ ĐỦ 0 NẾU NGẮN HƠN maxDigits)
+  const paddedDigitsByDay = digitsByDay.map(dayDigits => {
+    const padded = [...dayDigits];
+    while (padded.length < maxDigits) padded.push(0); // PAD VỚI 0 ĐỂ TRÁNH OUT-OF-BOUNDS
+    return padded.slice(0, maxDigits);
+  });
+
+  console.log('🎯 Region:', region, '| MaxDigits:', maxDigits, '| Days:', days);
+
+  // ✅ 6. TÍNH TOÁN CẦU (FIX LOOP BOUNDS)
+  const active = [];
+  let totalChecked = 0;
+
+  for (let i = 0; i < maxDigits; i++) {
+    for (let j = i + 1; j < maxDigits; j++) {  // FIX: 'maxmetrics' -> 'maxDigits'
+      totalChecked++;
+
+      let run = 0;
+      let currentPair = null;
+
+      for (let d = 0; d < days - 1; d++) {
+        const todayDigits = paddedDigitsByDay[d] || [];
+        // FIX: CHECK BOUNDS AN TOÀN HƠN VỚI PADDED ARRAY
+        if (i >= todayDigits.length || j >= todayDigits.length) break;
+
+        const pair = `${todayDigits[i]}${todayDigits[j]}`;
+        const nextDayLotos = lotosByDay[d + 1] || [];
+
+        if (nextDayLotos.includes(pair)) {
+          run++;
+          if (d === 0) currentPair = pair;
+        } else {
+          break;  // EARLY BREAK ĐỂ TỐI ƯU
+        }
+      }
+
+      if (run >= 3 && currentPair) {
+        active.push({ 
+          i1: i + 1,
+          i2: j + 1,
+          pair: currentPair,
+          run: run
+        });
+      }
+    }
+  }
+
+  console.log('🔥 Tổng cặp kiểm tra:', totalChecked, '| Tìm thấy:', active.length, 'cầu');
+
+  // ✅ 7. NHÓM THEO BIÊN ĐỘ
+  const groups = { 5: [], 4: [], 3: [] };
+  active.forEach(c => {
+    if (c.run >= 5) groups[5].push(c.pair);
+    else if (c.run >= 4) groups[4].push(c.pair);
+    else if (c.run >= 3) groups[3].push(c.pair);
+  });
+
+  // ✅ 8. CHUẨN BỊ RENDER
+  const cont = document.getElementById('detailed-results');
+  if (!cont) {
+    console.error('❌ Không tìm thấy #detailed-results');
+    return;
+  }
+
+  // ✅ HÀM RENDER DÒNG CẦU (KHÔNG ĐỔI)
+  function renderLine(title, arr, color) {
+    if (!arr.length) return '';
+    const unique = Array.from(new Set(arr));
+    const boxes = unique.map(x => 
+      `<span style="display:inline-block;margin:4px;padding:4px 8px;background:${color};color:#000;border-radius:4px;font-weight:bold">${x}</span>`
+    ).join('');
+    return `<div style="margin-top:8px"><div style="font-weight:bold">${title} (${unique.length}):</div><div style="margin-top:6px">${boxes}</div></div>`;
+  }
+
+  // ✅ 9. BUILD HTML (SYNC SHIFT HIỂN THỊ)
+  console.log('🔢 SHIFT khi render HTML:', currentShift);
+
+  let html = `<div id="cau-vi-tri-section" style="margin-top:20px;padding:12px;background:#0b1220;border:1px solid #374151;border-radius:8px">
+    <div style="color:#facc15;font-weight:bold;margin-bottom:8px">📊 CẦU VỊ TRÍ — LÔ CHẠY (ghép 2 vị trí) - ${maxDigits} vị trí</div>
+    <div style="color:#9ca3af;font-size:10px;margin-bottom:8px">
+      ✅ Logic: Đếm ngược từ ngày gần nhất (<span style="color:#fbbf24">Lùi ${currentShift} kỳ</span>) | 
+      Đã kiểm tra: ${totalChecked.toLocaleString()} cặp vị trí | 
+      Tìm thấy: <span style="color:#10b981;font-weight:bold">${active.length}</span> cầu
+    </div>`;
+
+  html += renderLine('🔥 Biên độ ≥5 ngày (Cầu rất mạnh)', groups[5], '#a7f3d0');
+  html += renderLine('⚠️ Biên độ 4 ngày (Cầu mạnh)', groups[4], '#fde68a');
+  html += renderLine('💡 Biên độ 3 ngày (Cầu mới)', groups[3], '#c7d2fe');
+
+  if (active.length === 0) {
+    html += `<div style="margin-top:12px;color:#f87171;text-align:center;padding:10px;background:#1e293b;border-radius:6px">
+      ⚠️ Không tìm thấy cầu nào đang chạy (biên độ ≥3)<br>
+      <span style="font-size:10px">Có thể thử giảm số kỳ hiển thị hoặc thay đổi đài</span>
+    </div>`;
+  }
+
+  html += `</div>`;
+  cont.insertAdjacentHTML('beforeend', html);
+
+  console.log('✅ RENDER HOÀN TẤT | Shift:', currentShift, '| Cầu:', active.length);
+}
+
+
+/* ✅ FIX LỖI 4: Hook với setTimeout */
+const __orig_loadApiData = window.loadApiData;
+window.loadApiData = async function() {
+  console.log('🔄 HOOK loadApiData');
+  if (typeof __orig_loadApiData === 'function') await __orig_loadApiData();
+  setTimeout(() => {
+    try { renderCauViTri_ByLotoNextDay(); } 
+    catch(e) { console.error('❌ Lỗi cầu vị trí:', e); }
+  }, 200);
+};
+
+const __orig_renderDetailedResults = window.renderDetailedResults;
+window.renderDetailedResults = function(data) {
+  console.log('🔄 HOOK renderDetailedResults');
+  if (typeof __orig_renderDetailedResults === 'function') __orig_renderDetailedResults(data);
+  setTimeout(() => {
+    try { renderCauViTri_ByLotoNextDay(); } 
+    catch(e) { console.error('❌ Lỗi cầu vị trí:', e); }
+  }, 200);
+};
+
+
+console.log('✅ Module Cầu Vị Trí đã load xong');
+</script>
+
+<!-- ==================== MÔ-ĐUN CẦU VỊ TRÍ 3 MIỀN - QUOTER CHUẨN CUỐI ==================== -->
+<script>
+console.log("✅ Cầu Vị Trí 3 miền - Quoter cuối khởi động");
+
+const REGION_ICONS = { "MB": ["🌄","🌄"], "MT": ["🌊","🌊"], "MN": ["🌾","🌾"] };
+
+/* --- Fetch API (có retry chống 408) --- */
+async function fetchApiDataForDai(code, retry = 2) {
+  const limit = code === "miba" ? 80 : 100; // giảm cho miba tránh timeout
+  const url = `https://www.kqxs88.live/api/front/open/lottery/history/list/game?limitNum=${limit}&gameCode=${code}`;
+  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+
+  try {
+    const res = await fetch(proxy, { method: "GET", cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const wrap = await res.json();
+    const json = JSON.parse(wrap.contents);
+    return getApiList(json) || [];
+  } catch (err) {
+    console.warn(`⚠️ Lỗi tải ${code}: ${err.message}`);
+    if (retry > 0) {
+      console.log(`🔁 Thử lại ${code} (${retry})`);
+      await new Promise(r => setTimeout(r, 1500));
+      return fetchApiDataForDai(code, retry - 1);
+    }
+    return [];
+  }
+}
+
+/* --- Tách lô --- */
+function extractLotos(item) {
+  if (!item) return [];
+  if (item.detail) {
+    let d=item.detail;
+    if(typeof d==="string"){try{d=JSON.parse(d);}catch{d=[];}}
+    if(Array.isArray(d))return d.map(g=>(""+g).replace(/\D/g,"").slice(-2)).filter(x=>x.length===2);
+  }
+  if(item.openNum){
+    const arr=(""+item.openNum).trim().split(/\s+/);
+    if(arr.length===27)return arr.map(s=>(""+s).replace(/\D/g,"").slice(-2));
+  }
+  return [];
+}
+
+/* --- Phân tích cầu --- */
+function analyzeCau(data, region, shift) {
+  if(!Array.isArray(data)||data.length<3)return{c3:[],c2:[]};
+  const used=(typeof shift==="number"&&shift>=0)?shift:(window.currentShift||0);
+  const src=used>0?data.slice(used):data;
+  if(src.length<3)return{c3:[],c2:[]};
+  const digitsByDay=[],lotosByDay=[];
+  for(const raw of src){
+    const lots=extractLotos(raw);
+    lotosByDay.push(lots);
+    let d=raw.detail;
+    if(typeof d==="string"){try{d=JSON.parse(d);}catch{d=null;}}
+    if(Array.isArray(d)){
+      const joined=d.join("").replace(/\D/g,"");
+      digitsByDay.push(joined.split("").map(n=>+n));
+    }else if(raw.openNum){
+      const s=(""+raw.openNum).replace(/\D/g,"");
+      digitsByDay.push(s.split("").map(n=>+n));
+    }else digitsByDay.push([]);
+  }
+  const maxDigits=region==="MB"?107:84;
+  const days=Math.min(digitsByDay.length,15);
+  const padded=digitsByDay.map(a=>{const t=[...a];while(t.length<maxDigits)t.push(0);return t.slice(0,maxDigits);});
+  const c3=new Set(),c2=new Set();
+  for(let i=0;i<maxDigits;i++){
+    for(let j=i+1;j<maxDigits;j++){
+      let run=0,pair=null;
+      for(let d=0;d<days-1;d++){
+        const today=padded[d],pairStr=`${today[i]}${today[j]}`,next=lotosByDay[d+1]||[];
+        if(next.includes(pairStr)){run++;if(d===0)pair=pairStr;}else break;
+      }
+      if(run>=3&&pair)c3.add(pair);
+      else if(run===2&&pair)c2.add(pair);
+    }
+  }
+  return {c3:[...c3],c2:[...c2]};
+}
+
+/* --- Render bảng + Quoter --- */
+async function renderCauViTri_QuoterFinal(){
+  const thu=document.getElementById("thu-select").value;
+  const container=document.getElementById("detailed-results");
+  if(!container)return;
+  const shift=window.currentShift||0;
+  container.innerHTML=`<div style="color:#60a5fa">🔄 Đang tải dữ liệu (lùi ${shift} kỳ)...</div>`;
+
+  const regions=["MB","MT","MN"];
+  const rows=[];
+  for(const region of regions){
+    const daiList=DAI_CODES[region]?.[thu]||{};
+    for(const [code,name] of Object.entries(daiList)){
+      const data=await fetchApiDataForDai(code);
+      const {c3,c2}=analyzeCau(data,region,shift);
+      rows.push({region,name,code,c3,c2});
+    }
+  }
+
+  let html=`
+  <table id='tbl-cauvitri' style="width:100%;border-collapse:collapse;margin-top:10px;font-size:11pt">
+  <tr style="background:#1e3a8a;color:#facc15">
+    <th style="padding:8px;border:1px solid #374151">Miền</th>
+    <th style="padding:8px;border:1px solid #374151">Đài</th>
+    <th style="padding:8px;border:1px solid #374151">Cầu ≥3 ngày</th>
+    <th style="padding:8px;border:1px solid #374151">Cầu 2 ngày</th>
+  </tr>`;
+  for(const r of rows){
+    const c3txt=r.c3.length?r.c3.slice(0,10).join(", ")+(r.c3.length>10?" …":""):"–";
+    const c2txt=r.c2.length?r.c2.slice(0,10).join(", ")+(r.c2.length>10?" …":""):"–";
+    html+=`
+    <tr>
+      <td style="border:1px solid #374151;padding:6px;text-align:center;color:#60a5fa">${r.region}</td>
+      <td style="border:1px solid #374151;padding:6px">${r.name}</td>
+      <td style="border:1px solid #374151;padding:6px;color:#10b981">${c3txt}</td>
+      <td style="border:1px solid #374151;padding:6px;color:#facc15">${c2txt}</td>
+    </tr>`;
+  }
+  html+="</table>";
+
+  const filterBar=`
+  <div style="margin-top:10px;color:#e5e7eb;font-size:11pt">
+    <label><input type='checkbox' id='chk-c3' checked> Lấy dữ liệu ≥3 ngày</label>
+    <label style='margin-left:12px'><input type='checkbox' id='chk-c2' checked> Lấy dữ liệu 2 ngày</label>
+  </div>`;
+
+  const quoteBlock=`
+  <button id='copy-quote' style='margin-top:10px;background:#fbbf24;color:#000;font-weight:bold;border-radius:6px;padding:6px 10px'>📋 Sao chép quote</button>
+  <pre id='quote-block' style='white-space:pre-wrap;background:#0f172a;color:#f8fafc;padding:10px;border-radius:8px;margin-top:10px;font-family:monospace'></pre>`;
+
+  container.innerHTML=filterBar+quoteBlock+html;
+  window._cvt_rows=rows;
+  refreshQuote_FilterOnly();
+  setupQuoteFilterEvents();
+}
+
+/* --- Cập nhật QUOTE theo lọc dữ liệu --- */
+function refreshQuote_FilterOnly(){
+  const rows=window._cvt_rows||[];
+  if(!rows.length)return;
+
+  const use3=document.getElementById("chk-c3")?.checked===true;
+  const use2=document.getElementById("chk-c2")?.checked===true;
+  const quotes=[];
+
+  for(const r of rows){
+    let combined=[];
+    if(use3) combined=combined.concat(r.c3);
+    if(use2) combined=combined.concat(r.c2);
+    combined=[...new Set(combined)].slice(0,10);
+    if(!combined.length) continue;
+
+    const icons=REGION_ICONS[r.region]||["✨","✨"];
+    const symbol=(use3&&use2)?"💎":(use3?"✨":"🍀");
+    const formatted=combined.map(x=>x.split("").join(" ")).join(" / ");
+    quotes.push(`${icons[0]} ${r.name} Lê Đào ${icons[1]}\n${symbol} ${formatted} ${symbol}`);
+  }
+
+  const quoteText=quotes.join("\n\n");
+  const q=document.getElementById("quote-block");
+  if(q) q.textContent=quoteText;
+
+  const b=document.getElementById("copy-quote");
+  if(b){
+    b.onclick=()=>{
+      navigator.clipboard.writeText(quoteText);
+      b.textContent="✅ Đã sao chép";
+      setTimeout(()=>b.textContent="📋 Sao chép quote",1500);
+    };
+  }
+}
+
+/* --- Checkbox event --- */
+function setupQuoteFilterEvents(){
+  ["chk-c3","chk-c2"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.onchange=refreshQuote_FilterOnly;
+  });
+}
+
+/* --- Nút + auto shift --- */
+function attachBtn(){
+  const header=document.querySelector(".header");
+  if(!header||document.getElementById("btn-cauvitri-quoterfinal"))return;
+  const btn=document.createElement("button");
+  btn.id="btn-cauvitri-quoterfinal";
+  btn.textContent="📊 Cầu 3 miền (Quoter chuẩn)";
+  btn.style.background="#0ea5e9";
+  btn.style.color="#fff";
+  btn.style.fontWeight="bold";
+  btn.style.borderRadius="6px";
+  btn.style.padding="6px 10px";
+  btn.onclick=renderCauViTri_QuoterFinal;
+  header.appendChild(btn);
+}
+
+function observeShiftChange(){
+  let oldShift=window.currentShift||0;
+  setInterval(()=>{
+    const cur=window.currentShift||0;
+    if(cur!==oldShift){
+      oldShift=cur;
+      renderCauViTri_QuoterFinal();
+    }
+  },1500);
+}
+
+setTimeout(()=>{
+  attachBtn();
+  observeShiftChange();
+},1000);
+
+console.log("✅ Quoter chuẩn cuối sẵn sàng");
+</script>
+
+
+
+</body>
+</html>
