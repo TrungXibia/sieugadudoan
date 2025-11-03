@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KU Lotto - Phân tích Sám & Hai Đôi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .controls {
+            background: #f5f5f5;
+            padding: 20px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .control-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .control-group select, .control-group button {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        
+        .control-group select:hover, .control-group select:focus {
+            border-color: #1976D2;
+            outline: none;
+        }
+        
+        button {
+            background: #1976D2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #1565C0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+        }
+        
+        .btn-success:hover {
+            background: #388E3C;
+        }
+        
+        .btn-info {
+            background: #00BCD4;
+        }
+        
+        .btn-info:hover {
+            background: #0097A7;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .left-panel {
+            border-right: 2px solid #ddd;
+            padding-right: 20px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-section h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+        
+        .results-table {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #1976D2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 3px solid #1976D2;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            border: none;
+            background: #e0e0e0;
+            margin-right: 2px;
+            margin-bottom: 2px;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        
+        .tab:hover {
+            background: #d0d0d0;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #1976D2;
+            border-bottom: 3px solid #1976D2;
+            margin-bottom: -3px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stats-text {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .header-text {
+            color: #2E86AB;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .subheader-text {
+            color: #A23B72;
+            font-weight: bold;
+        }
+        
+        .warning-text {
+            color: #FF6F00;
+            font-weight: bold;
+        }
+        
+        .high-text {
+            color: #D32F2F;
+            font-weight: bold;
+        }
+        
+        .medium-text {
+            color: #F57C00;
+        }
+        
+        .low-text {
+            color: #388E3C;
+        }
+        
+        .status-bar {
+            background: #263238;
+            color: white;
+            padding: 10px 30px;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .pattern-section {
+            margin-bottom: 30px;
+            border-left: 4px solid #1976D2;
+            padding-left: 15px;
+        }
+        
+        .xito-type {
+            color: #D32F2F;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+        }
+        
+        .xito-value {
+            color: #6A1B9A;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .hot-numbers {
+            color: #FF6F00;
+            margin: 5px 0;
+        }
+        
+        .pairs {
+            color: #00695C;
+            margin: 5px 0;
+        }
+        
+        .note {
+            background: #FFF3E0;
+            border-left: 4px solid #FF6F00;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .left-panel {
+                border-right: none;
+                border-bottom: 2px solid #ddd;
+                padding-bottom: 20px;
+            }
+        }
+		/* === TỰ ĐỘNG NHẬN DẠNG THIẾT BỊ: GIỮ GIAO DIỆN PC, CO GIÃN MOBILE === */
+
+		/* --- Giữ nguyên layout cũ cho máy tính --- */
+		@media (min-width: 1025px) {
+			body {
+				font-size: 15px;
+			}
+		}
+
+		/* --- Tự động co giãn cho tablet và điện thoại --- */
+		@media (max-width: 1024px) {
+			body {
+				font-size: 14px;
+				padding: 10px;
+			}
+
+			.container {
+				width: 100%;
+				max-width: 100%;
+				margin: 0;
+				border-radius: 0;
+				box-shadow: none;
+			}
+
+			.controls {
+				flex-direction: column;
+				align-items: stretch;
+				gap: 8px;
+				padding: 10px;
+			}
+
+			.control-group {
+				width: 100%;
+			}
+
+			.control-group select,
+			.control-group button {
+				width: 100%;
+				min-width: unset;
+				font-size: 14px;
+				padding: 8px;
+			}
+
+			.main-content {
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+				padding: 10px;
+			}
+
+			.left-panel {
+				border-right: none;
+				border-bottom: 1px solid #ccc;
+				padding-right: 0;
+				padding-bottom: 10px;
+			}
+
+			.tabs {
+				flex-wrap: wrap;
+				justify-content: center;
+				border-bottom-width: 2px;
+			}
+
+			.tab {
+				font-size: 12px;
+				padding: 8px 10px;
+				margin: 2px;
+			}
+
+			.tab-content {
+				padding: 8px;
+			}
+
+			/* Bảng co và cuộn ngang */
+			table {
+				font-size: 12px;
+				width: 100%;
+				display: block;
+				overflow-x: auto;
+				border: none;
+			}
+
+			table th, table td {
+				padding: 5px 6px;
+				white-space: nowrap;
+			}
+
+			/* Biểu đồ */
+			.chart-container {
+				width: 100%;
+				max-width: 100%;
+				overflow-x: auto;
+			}
+
+			/* Tab Khuyến nghị và Máy học */
+			#tab4 .stats-text,
+			#tab6 .stats-text {
+				font-size: 12px;
+				line-height: 1.2;
+				padding: 6px;
+			}
+
+			#tab4 table th,
+			#tab4 table td,
+			#tab6 table th,
+			#tab6 table td {
+				padding: 4px 5px;
+			}
+
+			/* Giảm header */
+			.header h1 {
+				font-size: 22px;
+			}
+
+			.header p {
+				font-size: 13px;
+			}
+
+			textarea {
+				width: 100%;
+				height: 120px;
+				font-size: 12px;
+			}
+
+			button {
+				font-size: 13px;
+				padding: 8px 10px;
+			}
+
+			.status-bar {
+				font-size: 12px;
+				text-align: center;
+				padding: 8px;
+			}
+		}
+
+		/* --- Riêng điện thoại nhỏ hơn 480px --- */
+		@media (max-width: 480px) {
+			body {
+				font-size: 13px;
+				padding: 6px;
+			}
+
+			.tab {
+				font-size: 11px;
+				padding: 6px 8px;
+			}
+
+			.control-group label {
+				font-size: 11px;
+			}
+
+			.header h1 {
+				font-size: 20px;
+			}
+
+			.header p {
+				font-size: 12px;
+			}
+
+			textarea {
+				height: 100px;
+			}
+		}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 Siêu Gà</h1>
+            <p>Hệ thống phân tích Siêu Gà</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Miền:</label>
+                <select id="regionSelect">
+                    <option value="MN">Miền Nam</option>
+                    <option value="MT">Miền Trung</option>
+                    <option value="MB" selected>Miền Bắc</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Thứ:</label>
+                <select id="daySelect">
+                    <option value="2">Thứ 2</option>
+                    <option value="3">Thứ 3</option>
+                    <option value="4">Thứ 4</option>
+                    <option value="5">Thứ 5</option>
+                    <option value="6">Thứ 6</option>
+                    <option value="7">Thứ 7</option>
+                    <option value="CN">Chủ Nhật</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Đài:</label>
+                <select id="daiSelect">
+                    <option value="">Đang tải...</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Lookback:</label>
+                <select id="lookbackSelect">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="7">7</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+            
+            <button class="btn-success" onclick="selectToday()">🗓️ Hôm nay</button>
+            <button class="btn-info" onclick="analyzePaste()">Phân tích dán tay</button>
+        </div>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="input-section">
+                    <h3>Dán dữ liệu (mỗi dòng: Kỳ TAB 5 số):</h3>
+                    <textarea id="pasteInput" placeholder="Ví dụ:
+202501234	5	7	3	9	2
+202501235	1	1	4	8	3"></textarea>
+                    <div class="note">💡 Hoặc chọn đài để tải tự động từ API</div>
+                </div>
+                
+                <div class="results-table">
+                    <h3 style="padding: 10px; background: #E3F2FD;">📅 20 kỳ gần nhất (từ API):</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kỳ</th>
+                                <th>S1</th>
+                                <th>S2</th>
+                                <th>S3</th>
+                                <th>S4</th>
+                                <th>S5</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <tr><td colspan="6">Chưa có dữ liệu</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab(0)">📊 Thống kê</button>
+                    <button class="tab" onclick="switchTab(1)">📈 Biểu đồ</button>
+                    <button class="tab" onclick="switchTab(2)">🔥 Pattern</button>
+                    <button class="tab" onclick="switchTab(3)">📋 Danh sách</button>
+                    <button class="tab" onclick="switchTab(4)">🔮 Khuyến nghị</button>
+                    <button class="tab" onclick="switchTab(5)">📖 Quy tắc</button>
+                    <button class="tab" onclick="switchTab(6)">🤖 Máy học</button>
+                </div>
+                
+                <div class="tab-content active" id="tab0">
+                    <div class="stats-text" id="statsContent">Chọn đài hoặc dán dữ liệu để bắt đầu phân tích...</div>
+                </div>
+                
+                <div class="tab-content" id="tab1">
+                    <div class="chart-container">
+                        <canvas id="freqChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="tab2">
+                    <div id="patternsContent">Chưa có dữ liệu pattern...</div>
+                </div>
+                
+                <div class="tab-content" id="tab3">
+                    <div class="stats-text" id="listContent">Chưa có danh sách...</div>
+                </div>
+                
+                <div class="tab-content" id="tab4">
+                    <div class="stats-text" id="recommendContent">Chưa có khuyến nghị...</div>
+                </div>
+                
+                <div class="tab-content" id="tab5">
+                    <div class="stats-text" style="line-height: 1.8;">
+<span class="header-text">📖 QUY TẮC XÌ TỐ KUBET</span>
+
+<span class="warning-text">⚠️ Lưu ý: Không giới hạn trình tự con số mở thưởng</span>
+
+════════════════════════════════════════════════════════════════════════════════
+
+<span class="xito-type">🎯 5 CON</span>
+<span class="subheader-text">Kết quả 5 con số mở thưởng đều GIỐNG NHAU</span>
+  ✅ Trúng: 22222, 66666, 88888
+  ❌ Không trúng: 22221, 66363, 85888
+
+<span class="xito-type">🎯 TỨ QUÝ</span>
+<span class="subheader-text">Kết quả có 4 con số GIỐNG NHAU + 1 số khác</span>
+  ✅ Trúng: 22221, 66366, 85888
+  ❌ Không trúng: 22222, 66666, 88855
+
+<span class="xito-type">🎯 CÙ LŨ</span>
+<span class="subheader-text">Có 3 số GIỐNG NHAU + 2 số còn lại GIỐNG NHAU (3+2)</span>
+  ✅ Trúng: 11222, 66633, 58885
+  ❌ Không trúng: 22231, 66623, 88995
+
+<span class="xito-type">🎯 SẢNH</span>
+<span class="subheader-text">5 số LIÊN TIẾP từ nhỏ đến lớn (9,0,1 được tính liên nhau)</span>
+  ✅ Trúng: 23456, 89012, 90123
+  ❌ Không trúng: 23196, 13679, 80123
+
+<span class="xito-type">🎯 SÁM CÔ</span>
+<span class="subheader-text">Có 3 số GIỐNG NHAU + 2 số còn lại KHÁC NHAU (3+1+1)</span>
+  ✅ Trúng: 22231, 66623, 88895
+  ❌ Không trúng: 11222, 66666, 58888
+
+<span class="xito-type">🎯 2 ĐÔI</span>
+<span class="subheader-text">Có 2 CẶP số GIỐNG NHAU + 1 số khác (2+2+1)</span>
+  ✅ Trúng: 22166, 66355, 82668
+  ❌ Không trúng: 22168, 66633, 55555
+
+<span class="xito-type">🎯 1 ĐÔI</span>
+<span class="subheader-text">Có 1 CẶP số GIỐNG NHAU + 3 số KHÁC NHAU (2+1+1+1)</span>
+  ✅ Trúng: 22168, 66315, 82968
+  ❌ Không trúng: 22166, 66633, 66666
+
+<span class="xito-type">🎯 SỐ RỜI</span>
+<span class="subheader-text">5 số KHÁC NHAU và KHÔNG có liên kết bất kỳ</span>
+  ✅ Trúng: 23186, 13579, 21968
+  ❌ Không trúng: 23456, 89012, 22165
+
+════════════════════════════════════════════════════════════════════════════════
+<span class="note">💡 Hệ thống sẽ tự động phân tích và phát hiện các pattern theo đúng quy tắc trên</span>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="tab6">
+                    <div id="mlContent" class="stats-text">
+                        Chưa có dữ liệu máy học...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar" id="statusBar">Sẵn sàng</div>
+    </div>
+
+    <script>
+        const DAI_CODES = {
+            "MN": {
+                "2": {"cama": "Cà Mau", "doth": "Đồng Tháp", "tphc": "TP. Hồ Chí Minh"},
+                "3": {"bali": "Bạc Liêu", "betr": "Bến Tre", "vuta": "Vũng Tàu"},
+                "4": {"cath": "Cần Thơ", "dona": "Đồng Nai", "sotr": "Sóc Trăng"},
+                "5": {"angi": "An Giang", "bith": "Bình Thuận", "tani": "Tây Ninh"},
+                "6": {"bidu": "Bình Dương", "trvi": "Trà Vinh", "vilo": "Vĩnh Long"},
+                "7": {"biph": "Bình Phước", "hagi": "Hậu Giang", "loan": "Long An", "tphc": "TP. Hồ Chí Minh"},
+                "CN": {"dalat": "Đà Lạt", "kigi": "Kiên Giang", "tigi": "Tiền Giang"}
+            },
+            "MT": {
+                "2": {"thth": "Thừa Thiên Huế", "phye": "Phú Yên"},
+                "3": {"dalak": "Đắk Lắk", "quna": "Quảng Nam"},
+                "4": {"dana": "Đà Nẵng", "khho": "Khánh Hòa"},
+                "5": {"bidi": "Bình Định", "qubi": "Quảng Bình", "qutr": "Quảng Trị"},
+                "6": {"gila": "Gia Lai", "nith": "Ninh Thuận"},
+                "7": {"dana": "Đà Nẵng", "dano": "Đắk Nông", "qung": "Quảng Ngãi"},
+                "CN": {"khho": "Khánh Hòa", "thth": "Thừa Thiên Huế", "kotu": "Kon Tum"}
+            },
+            "MB": {
+                "2": {"miba": "Miền Bắc"},
+                "3": {"miba": "Miền Bắc"},
+                "4": {"miba": "Miền Bắc"},
+                "5": {"miba": "Miền Bắc"},
+                "6": {"miba": "Miền Bắc"},
+                "7": {"miba": "Miền Bắc"},
+                "CN": {"miba": "Miền Bắc"}
+            }
+        };
+
+        let currentData = null;
+        let xitoInfo = null;
+        let lookback = 10;
+        let chartInstance = null;
+
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('regionSelect').addEventListener('change', updateDais);
+            document.getElementById('daySelect').addEventListener('change', updateDais);
+            document.getElementById('daiSelect').addEventListener('change', loadSelectedDai);
+            document.getElementById('lookbackSelect').addEventListener('change', function(e) {
+                lookback = parseInt(e.target.value);
+                if (currentData) runFullAnalysis('API');
+            });
+            
+            const pasteInput = document.getElementById('pasteInput');
+            pasteInput.addEventListener('paste', function() {
+                setTimeout(analyzePaste, 100);
+            });
+            
+            pasteInput.addEventListener('input', function() {
+                const text = this.value.trim();
+                if (text.length > 50) {
+                    clearTimeout(this.inputTimer);
+                    this.inputTimer = setTimeout(analyzePaste, 500);
+                }
+            });
+            
+            setTimeout(selectToday, 500);
+        });
+
+        function selectToday() {
+            const days = ['CN', '2', '3', '4', '5', '6', '7'];
+            const today = new Date();
+            const dayIndex = today.getDay();
+            const dayStr = days[dayIndex];
+            
+            document.getElementById('regionSelect').value = 'MB';
+            document.getElementById('daySelect').value = dayStr;
+            updateDais();
+            updateStatus(`✅ Đã chọn tự động: Miền Bắc - Thứ ${dayStr}`);
+        }
+
+        function updateDais() {
+            const region = document.getElementById('regionSelect').value;
+            const day = document.getElementById('daySelect').value;
+            const daiSelect = document.getElementById('daiSelect');
+            
+            if (!DAI_CODES[region] || !DAI_CODES[region][day]) {
+                daiSelect.innerHTML = '<option value="">Không có dữ liệu</option>';
+                return;
+            }
+            
+            const mapping = DAI_CODES[region][day];
+            const options = Object.entries(mapping)
+                .map(([code, name]) => `<option value="${code}">${name} (${code})</option>`)
+                .join('');
+            
+            daiSelect.innerHTML = options;
+            
+            if (daiSelect.options.length > 0) {
+                setTimeout(loadSelectedDai, 300);
+            }
+        }
+
+        async function loadSelectedDai() {
+            const code = document.getElementById('daiSelect').value;
+            if (!code) return;
+            
+            const daiText = document.getElementById('daiSelect').options[document.getElementById('daiSelect').selectedIndex].text;
+            updateStatus(`⏳ Đang tải ${daiText} ...`);
+            
+            try {
+                const data = await fetchKQXSAPI(code, 100);
+                if (!data || data.length === 0) {
+                    updateStatus('❌ Không có dữ liệu từ API');
+                    return;
+                }
+                
+                currentData = data;
+                updateResultsTable(data);
+                runFullAnalysis('API: ' + daiText);
+                
+                const latestKy = data[0].ky;
+                updateStatus(`✅ Tải thành công - Kỳ mới nhất: ${latestKy}`);
+            } catch (error) {
+                console.error('API Error:', error);
+                updateStatus(`❌ Lỗi API: ${error.message}`);
+            }
+        }
+
+        async function fetchKQXSAPI(gameCode, limit = 60) {
+            const url = `https://www.kqxs88.live/api/front/open/lottery/history/list/game?limitNum=${limit}&gameCode=${gameCode}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            let issueList = null;
+            if (data.t && data.t.issueList) {
+                issueList = data.t.issueList;
+            } else if (data.data) {
+                issueList = data.data.list || data.data.records;
+            }
+            if (!issueList) {
+                issueList = data.records || data.list;
+            }
+            
+            if (!issueList || issueList.length === 0) {
+                throw new Error('Không tìm thấy dữ liệu kỳ quay');
+            }
+            
+            const rows = [];
+            for (const item of issueList) {
+                const ky = item.turnNum || item.expect || item.issue || '';
+                let nums = item.openNum || item.open_num || '';
+                
+                if (!ky || ky === '1' || ky.length < 5) continue;
+                
+                let parts;
+                if (Array.isArray(nums)) {
+                    parts = nums.map(x => String(x));
+                } else {
+                    parts = String(nums).trim().split(/[,\s]+/).filter(p => /^\d+$/.test(p));
+                }
+                
+                if (parts.length >= 5) {
+                    const allValid = parts.slice(0, 5).every(p => {
+                        const num = parseInt(p);
+                        return num >= 0 && num <= 9;
+                    });
+                    
+                    if (allValid) {
+                        rows.push({
+                            ky: ky,
+                            s1: parseInt(parts[0]),
+                            s2: parseInt(parts[1]),
+                            s3: parseInt(parts[2]),
+                            s4: parseInt(parts[3]),
+                            s5: parseInt(parts[4])
+                        });
+                    }
+                }
+            }
+            
+            return rows;
+        }
+
+        function parseRawText(raw) {
+            const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+            const data = [];
+            
+            for (const line of lines) {
+                let match;
+                
+                match = line.match(/(\d{9})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
+                if (match) {
+                    data.push({
+                        ky: match[1],
+                        s1: parseInt(match[2]),
+                        s2: parseInt(match[3]),
+                        s3: parseInt(match[4]),
+                        s4: parseInt(match[5]),
+                        s5: parseInt(match[6])
+                    });
+                    continue;
+                }
+                
+                match = line.match(/(\d+)\s+(\d)\s+(\d)\s+(\d)\s+(\d)\s+(\d)/);
+                if (match) {
+                    data.push({
+                        ky: match[1],
+                        s1: parseInt(match[2]),
+                        s2: parseInt(match[3]),
+                        s3: parseInt(match[4]),
+                        s4: parseInt(match[5]),
+                        s5: parseInt(match[6])
+                    });
+                    continue;
+                }
+            }
+            
+            if (data.length === 0) {
+                throw new Error('Không trích xuất được dữ liệu. Định dạng: Kỳ TAB 5 số (mỗi số cách nhau)');
+            }
+            
+            return data;
+        }
+
+        function analyzePaste() {
+            const raw = document.getElementById('pasteInput').value.trim();
+            
+            if (!raw) {
+                return;
+            }
+            
+            try {
+                currentData = parseRawText(raw);
+                updateResultsTable(currentData);
+                runFullAnalysis('Dán tay');
+                updateStatus('✅ Phân tích dán tay thành công');
+            } catch (error) {
+                console.error('Parse error:', error);
+                updateStatus('❌ Lỗi: ' + error.message);
+            }
+        }
+
+        function updateResultsTable(data) {
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = '';
+            
+            const validData = data.filter(row => {
+                return row.ky && row.ky !== '1' && row.ky.length >= 5;
+            });
+            
+            const displayData = validData.slice(0, 20);
+            
+            if (displayData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">Chưa có dữ liệu</td></tr>';
+                return;
+            }
+            
+            for (const row of displayData) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.ky}</td>
+                    <td>${row.s1}</td>
+                    <td>${row.s2}</td>
+                    <td>${row.s3}</td>
+                    <td>${row.s4}</td>
+                    <td>${row.s5}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateStatus(msg) {
+            document.getElementById('statusBar').textContent = msg;
+        }
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                    contents[i].classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                    contents[i].classList.remove('active');
+                }
+            });
+        }
+
+        function detectXitoList(nums) {
+            if (!Array.isArray(nums) || nums.length !== 5) return [null, null];
+
+            const counts = {};
+            for (const n of nums) counts[n] = (counts[n] || 0) + 1;
+            const freq = Object.values(counts).sort((a, b) => b - a);
+            const uniqueCount = Object.keys(counts).length;
+
+            if (freq[0] === 5) {
+                return ['5con', nums[0]];
+            }
+
+            if (freq[0] === 4 && freq[1] === 1) {
+                const four = parseInt(Object.keys(counts).find(k => counts[k] === 4));
+                return ['tuquy', four];
+            }
+
+            if (freq[0] === 3 && freq[1] === 2) {
+                const three = parseInt(Object.keys(counts).find(k => counts[k] === 3));
+                const pair = parseInt(Object.keys(counts).find(k => counts[k] === 2));
+                return ['culu', [three, pair]];
+            }
+
+            const sorted = [...nums].sort((a, b) => a - b);
+            const s = sorted.join('');
+            const seq = '012345678901234567890';
+            
+            if (uniqueCount === 5) {
+                if (seq.includes(s)) {
+                    return ['sanh', sorted];
+                }
+                if (sorted[4] - sorted[0] === 4) {
+                    return ['sanh', sorted];
+                }
+            }
+
+            if (freq[0] === 3 && freq[1] === 1 && freq[2] === 1) {
+                const three = parseInt(Object.keys(counts).find(k => counts[k] === 3));
+                return ['sam', three];
+            }
+
+            if (freq[0] === 2 && freq[1] === 2 && freq[2] === 1) {
+                const pairs = Object.keys(counts)
+                    .filter(k => counts[k] === 2)
+                    .map(Number)
+                    .sort((a, b) => a - b);
+                return ['haidoi', pairs];
+            }
+
+            if (freq[0] === 2 && freq[1] === 1 && freq[2] === 1 && freq[3] === 1) {
+                const pair = parseInt(Object.keys(counts).find(k => counts[k] === 2));
+                return ['doi', pair];
+            }
+
+            if (uniqueCount === 5) {
+                return ['soroi', sorted];
+            }
+
+            return [null, null];
+        }
+
+        function analyzeDF(data) {
+            const info = {sam: [], haidoi: [], doi: [], tuquy: [], '5con': [], culu: [], sanh: [], soroi: []};
+            
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                const nums = [row.s1, row.s2, row.s3, row.s4, row.s5];
+                const [xtype, val] = detectXitoList(nums);
+                
+                if (xtype && val !== null && info[xtype]) {
+                    info[xtype].push({
+                        index: i,
+                        ky: row.ky,
+                        value: val,
+                        numbers: nums
+                    });
+                }
+            }
+            
+            return info;
+        }
+
+        function recentFreq(data, lb) {
+            const freq = {};
+            const recent = data.slice(0, Math.min(lb, data.length));
+            
+            for (const row of recent) {
+                [row.s1, row.s2, row.s3, row.s4, row.s5].forEach(n => {
+                    freq[n] = (freq[n] || 0) + 1;
+                });
+            }
+            
+            return freq;
+        }
+
+        function runFullAnalysis(source) {
+            if (!currentData) return;
+            
+            currentData = currentData.filter(row => {
+                return row.ky && row.ky !== '1' && row.ky.length >= 5;
+            });
+            
+            if (currentData.length === 0) {
+                updateStatus('❌ Không có dữ liệu hợp lệ');
+                return;
+            }
+            
+            xitoInfo = analyzeDF(currentData);
+            const freq = recentFreq(currentData, lookback);
+            
+            showStats(freq, source);
+            showChart(freq);
+            showPatterns();
+            showList();
+            showRecommendations();
+            
+            setTimeout(() => runMachineLearning(), 500);
+            
+            updateStatus(`✅ Phân tích xong (${source})`);
+        }
+
+        function showStats(freq, source) {
+            const el = document.getElementById('statsContent');
+            let html = `<span class="header-text">📊 Phân tích nguồn: ${source}</span>\n`;
+            
+            if (currentData.length > 0) {
+                html += `<span class="warning-text">📅 Kỳ mới nhất: ${currentData[0].ky} | Kỳ cũ nhất: ${currentData[currentData.length-1].ky}</span>\n`;
+            }
+            
+            html += `<span class="subheader-text">Tổng kỳ: ${currentData.length} | Lookback: ${lookback}</span>\n\n`;
+            html += `<span class="subheader-text">🔢 Tần suất (phạm vi lookback)</span>\n`;
+            
+            const maxFreq = Math.max(...Object.values(freq), 1);
+            for (let d = 0; d < 10; d++) {
+                const count = freq[d] || 0;
+                let className = 'low-text';
+                if (count >= maxFreq * 0.7) className = 'high-text';
+                else if (count >= maxFreq * 0.4) className = 'medium-text';
+                
+                html += `<span class="${className}">  ${d}: ${count} lần</span>\n`;
+            }
+            
+            el.innerHTML = html;
+        }
+
+        function showChart(freq) {
+            const ctx = document.getElementById('freqChart');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const labels = Array.from({length: 10}, (_, i) => String(i));
+            const data = labels.map(l => freq[l] || 0);
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số lần xuất hiện',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tần suất trong lookback',
+                            font: {size: 16}
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {stepSize: 1}
+                        }
+                    }
+                }
+            });
+        }
+
+        function showPatterns() {
+            const el = document.getElementById('patternsContent');
+            let html = '';
+            
+            const allTypes = ['5con', 'tuquy', 'culu', 'sanh', 'sam', 'haidoi', 'doi', 'soroi'];
+            const typeNames = {
+                '5con': '5 CON',
+                'tuquy': 'TỨ QUÝ', 
+                'culu': 'CÙ LŨ',
+                'sanh': 'SẢNH',
+                'sam': 'SÁM CÔ',
+                'haidoi': 'HAI ĐÔI',
+                'doi': 'MỘT ĐÔI',
+                'soroi': 'SỐ RỜI'
+            };
+            
+            for (const xtype of allTypes) {
+                const items = xitoInfo[xtype] || [];
+                
+                if (items.length === 0) continue;
+                
+                html += `<div class="pattern-section">`;
+                html += `<div class="xito-type">🎯 ${typeNames[xtype]} (${items.length} lần)</div>`;
+                
+                const grouped = {};
+                for (const item of items) {
+                    let key;
+                    if (Array.isArray(item.value)) {
+                        const sorted = [...item.value].sort((a,b) => a-b);
+                        key = sorted.join('-');
+                    } else {
+                        key = String(item.value);
+                    }
+                    
+                    if (!grouped[key]) grouped[key] = [];
+                    grouped[key].push(item);
+                }
+                
+                for (const [valStr, group] of Object.entries(grouped)) {
+                    html += `<div class="xito-value">▶ ${typeNames[xtype]} ${valStr} | Tổng: ${group.length} lần</div>`;
+                    
+                    const allNums = group.flatMap(g => g.numbers);
+                    const numCount = {};
+                    allNums.forEach(n => numCount[n] = (numCount[n] || 0) + 1);
+                    const hotNums = Object.entries(numCount)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 6)
+                        .map(([n, c]) => `${n}(${c})`)
+                        .join(', ');
+                    
+                    const pairCount = {};
+                    for (const g of group) {
+                        const nums = g.numbers;
+                        for (let i = 0; i < nums.length; i++) {
+                            for (let j = i + 1; j < nums.length; j++) {
+                                const pair = [nums[i], nums[j]].sort((a,b) => a-b).join('-');
+                                pairCount[pair] = (pairCount[pair] || 0) + 1;
+                            }
+                        }
+                    }
+                    const commonPairs = Object.entries(pairCount)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 6)
+                        .map(([p, c]) => `${p}(${c})`)
+                        .join(', ');
+                    
+                    html += `<div class="hot-numbers">🔥 Hot numbers: ${hotNums}</div>`;
+                    html += `<div class="pairs">🎲 Pairs: ${commonPairs}</div>`;
+                }
+                
+                html += `</div>`;
+            }
+            
+            if (!html) {
+                html = '<p>Chưa có dữ liệu pattern...</p>';
+            }
+            
+            el.innerHTML = html;
+        }
+
+        function showList() {
+            const el = document.getElementById('listContent');
+            let html = '';
+            
+            const allTypes = ['5con', 'tuquy', 'culu', 'sanh', 'sam', 'haidoi', 'doi', 'soroi'];
+            const typeNames = {
+                '5con': '5 CON',
+                'tuquy': 'TỨ QUÝ',
+                'culu': 'CÙ LŨ', 
+                'sanh': 'SẢNH',
+                'sam': 'SÁM CÔ',
+                'haidoi': 'HAI ĐÔI',
+                'doi': 'MỘT ĐÔI',
+                'soroi': 'SỐ RỜI'
+            };
+            
+            for (const xtype of allTypes) {
+                const items = xitoInfo[xtype] || [];
+                if (items.length === 0) continue;
+                
+                html += `\n${'='.repeat(80)}\n`;
+                html += `📋 DANH SÁCH ${typeNames[xtype]} (MỚI→CŨ)\n`;
+                html += `${'='.repeat(80)}\n\n`;
+                
+                const sorted = [...items].sort((a, b) => a.index - b.index);
+                
+                for (const item of sorted) {
+                    let valStr;
+                    if (Array.isArray(item.value)) {
+                        const sorted = [...item.value].sort((a,b) => a-b);
+                        valStr = sorted.join('-');
+                    } else {
+                        valStr = String(item.value);
+                    }
+                    const numsStr = item.numbers.join(' ');
+                    html += `  🎯 Kỳ ${item.ky} | Giá trị ${valStr} | ${numsStr}\n`;
+                }
+                
+                html += '\n';
+            }
+            
+            if (!html) {
+                html = 'Chưa có danh sách...';
+            }
+            
+            el.textContent = html;
+        }
+
+        function showRecommendations() {
+            try {
+                const el = document.getElementById('recommendContent');
+                if (!el) return;
+
+                xitoInfo = xitoInfo || { sam: [], haidoi: [], doi: [], tuquy: [], '5con': [], culu: [], sanh: [], soroi: [] };
+                const n = Array.isArray(currentData) ? currentData.length : 0;
+
+                const samItems = Array.isArray(xitoInfo.sam) ? xitoInfo.sam : [];
+                const samLatest = {};
+                for (const item of samItems) {
+                    const val = String(item.value);
+                    if (!(val in samLatest) || item.index < samLatest[val]) {
+                        samLatest[val] = item.index;
+                    }
+                }
+                const samGaps = [];
+                for (let d = 0; d < 10; d++) {
+                    const lastIdx = samLatest[String(d)];
+                    const gap = lastIdx !== undefined ? lastIdx : n;
+                    samGaps.push({ digit: d, gap });
+                }
+                samGaps.sort((a, b) => b.gap - a.gap);
+
+                const haidoiItems = Array.isArray(xitoInfo.haidoi) ? xitoInfo.haidoi : [];
+                const pairLatest = {};
+                for (const item of haidoiItems) {
+                    if (Array.isArray(item.value) && item.value.length === 2) {
+                        const sorted = [...item.value].sort((a,b) => a-b);
+                        const pairKey = sorted.join('-');
+                        if (!(pairKey in pairLatest) || item.index < pairLatest[pairKey]) {
+                            pairLatest[pairKey] = item.index;
+                        }
+                    }
+                }
+                
+                const allPairGaps = [];
+                for (let i = 0; i < 10; i++) {
+                    for (let j = i + 1; j < 10; j++) {
+                        const pairKey = `${i}-${j}`;
+                        const lastIdx = pairLatest[pairKey];
+                        const gap = lastIdx !== undefined ? lastIdx : n;
+                        allPairGaps.push({ pair: pairKey, gap });
+                    }
+                }
+                allPairGaps.sort((a, b) => b.gap - a.gap);
+
+                const doiItems = Array.isArray(xitoInfo.doi) ? xitoInfo.doi : [];
+                const doiLatest = {};
+                for (const item of doiItems) {
+                    const key = String(item.value);
+                    if (!(key in doiLatest) || item.index < doiLatest[key]) doiLatest[key] = item.index;
+                }
+                for (const item of haidoiItems) {
+                    if (Array.isArray(item.value)) {
+                        for (const v of item.value) {
+                            const key = String(v);
+                            if (!(key in doiLatest) || item.index < doiLatest[key]) doiLatest[key] = item.index;
+                        }
+                    }
+                }
+                const doiGaps = [];
+                for (let d = 0; d < 10; d++) {
+                    const k = String(d);
+                    const lastIdx = doiLatest[k];
+                    const gap = lastIdx !== undefined ? lastIdx : n;
+                    doiGaps.push({ digit: d, gap });
+                }
+                doiGaps.sort((a, b) => b.gap - a.gap);
+
+                let html = `
+<div style="font-family: 'Courier New', monospace; line-height: 1.6;">
+<span style="color: #2E86AB; font-weight: bold; font-size: 18px;">📊 KHUYẾN NGHỊ DỰA TRÊN BIÊN ĐỘ (GAP)</span>
+<span style="color: #888; font-size: 12px;">Trong ${Math.min(lookback, n)} kỳ lookback</span>
+
+${'='.repeat(80)}
+<span style="color: #D32F2F; font-weight: bold; font-size: 18px;">🎯 SÁM CÔ - TOP 5 SẮP RA</span>
+${'='.repeat(80)}
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-family: 'Courier New', monospace;">
+    <thead>
+        <tr style="background: #1976D2; color: white;">
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 15%;">Thứ tự</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 25%;">Số SÁM</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Biên độ (kỳ)</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Đánh giá</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+                samGaps.slice(0, 5).forEach((it, idx) => {
+                    const rank = idx + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}️⃣`;
+                    const status = it.gap >= n * 0.7 ? '🔥🔥🔥 RẤT GẤP' : it.gap >= n * 0.5 ? '🔥🔥 GẤP' : '🔥 SẮP RA';
+                    const bgColor = rank <= 3 ? '#FFEBEE' : '#fff';
+                    const textWeight = rank <= 3 ? 'bold' : 'normal';
+                    
+                    html += `
+        <tr style="background: ${bgColor};">
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${medal}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 20px; font-weight: bold; color: #D32F2F;">${it.digit}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${it.gap}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${status}</td>
+        </tr>`;
+                });
+
+                html += `
+    </tbody>
+</table>
+
+<div style="font-family: 'Courier New', monospace;">
+${'='.repeat(80)}
+<span style="color: #D32F2F; font-weight: bold; font-size: 18px;">🎯 HAI ĐÔI - TOP 5 SẮP RA</span>
+${'='.repeat(80)}
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-family: 'Courier New', monospace;">
+    <thead>
+        <tr style="background: #1976D2; color: white;">
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 15%;">Thứ tự</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 25%;">Cặp số</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Biên độ (kỳ)</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Đánh giá</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+                allPairGaps.slice(0, 5).forEach((it, idx) => {
+                    const rank = idx + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}️⃣`;
+                    const status = it.gap >= n * 0.7 ? '🔥🔥🔥 RẤT GẤP' : it.gap >= n * 0.5 ? '🔥🔥 GẤP' : '🔥 SẮP RA';
+                    const bgColor = rank <= 3 ? '#FFEBEE' : '#fff';
+                    const textWeight = rank <= 3 ? 'bold' : 'normal';
+                    
+                    html += `
+        <tr style="background: ${bgColor};">
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${medal}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 18px; font-weight: bold; color: #6A1B9A;">${it.pair}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${it.gap}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${status}</td>
+        </tr>`;
+                });
+
+                html += `
+    </tbody>
+</table>
+
+<div style="font-family: 'Courier New', monospace;">
+${'='.repeat(80)}
+<span style="color: #D32F2F; font-weight: bold; font-size: 18px;">🎯 MỘT ĐÔI - TOP 5 SẮP RA</span>
+${'='.repeat(80)}
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-family: 'Courier New', monospace;">
+    <thead>
+        <tr style="background: #1976D2; color: white;">
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 15%;">Thứ tự</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 25%;">Số ĐÔI</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Biên độ (kỳ)</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; width: 30%;">Đánh giá</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+                doiGaps.slice(0, 5).forEach((it, idx) => {
+                    const rank = idx + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}️⃣`;
+                    const status = it.gap >= n * 0.7 ? '🔥🔥🔥 RẤT GẤP' : it.gap >= n * 0.5 ? '🔥🔥 GẤP' : '🔥 SẮP RA';
+                    const bgColor = rank <= 3 ? '#FFEBEE' : '#fff';
+                    const textWeight = rank <= 3 ? 'bold' : 'normal';
+                    
+                    html += `
+        <tr style="background: ${bgColor};">
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${medal}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 20px; font-weight: bold; color: #00695C;">${it.digit}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: ${textWeight};">${it.gap}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${status}</td>
+        </tr>`;
+                });
+
+                html += `
+    </tbody>
+</table>
+
+<div style="font-family: 'Courier New', monospace; margin-top: 20px;">
+<span style="color: #A23B72; font-weight: bold; font-size: 16px;">📊 BẢNG BIÊN ĐỘ CHI TIẾT - MỘT ĐÔI (0-9)</span>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-family: 'Courier New', monospace;">
+    <thead>
+        <tr style="background: #1976D2; color: white;">
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold;">Đôi</th>`;
+                
+                for (let d = 0; d < 10; d++) {
+                    html += `<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; font-size: 16px;">${d}</th>`;
+                }
+                
+                html += `
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; background: #E3F2FD; font-weight: bold;">Gap</td>`;
+                
+                for (let d = 0; d < 10; d++) {
+                    const gapData = doiGaps.find(x => x.digit === d);
+                    const gap = gapData ? gapData.gap : n;
+                    
+                    let bgColor = '#C8E6C9';
+                    let textColor = '#1B5E20';
+                    let fontWeight = 'normal';
+                    
+                    if (gap >= n * 0.7) {
+                        bgColor = '#FFCDD2';
+                        textColor = '#B71C1C';
+                        fontWeight = 'bold';
+                    } else if (gap >= n * 0.4) {
+                        bgColor = '#FFE082';
+                        textColor = '#F57F17';
+                        fontWeight = 'bold';
+                    }
+                    
+                    html += `<td style="border: 1px solid #ddd; padding: 10px; text-align: center; background: ${bgColor}; color: ${textColor}; font-weight: ${fontWeight}; font-size: 15px;">${gap}</td>`;
+                }
+                
+                html += `
+        </tr>
+    </tbody>
+</table>
+
+<div style="margin-top: 15px; padding: 12px; background: #FFF3E0; border-left: 4px solid #FF6F00; border-radius: 5px; font-size: 13px;">
+    💡 <strong>Chú thích:</strong><br>
+    🥇🥈🥉 = Top 3 ưu tiên cao nhất<br>
+    <span style="display: inline-block; width: 20px; height: 15px; background: #FFCDD2; border: 1px solid #ccc; margin: 0 5px; vertical-align: middle;"></span> Gap cao (≥70%, sắp ra) 
+    <span style="display: inline-block; width: 20px; height: 15px; background: #FFE082; border: 1px solid #ccc; margin: 0 5px; vertical-align: middle;"></span> Gap TB (40-70%) 
+    <span style="display: inline-block; width: 20px; height: 15px; background: #C8E6C9; border: 1px solid #ccc; margin: 0 5px; vertical-align: middle;"></span> Gap thấp (<40%, mới ra)
+</div>
+`;
+
+                el.innerHTML = html;
+            } catch (err) {
+                console.error('showRecommendations error:', err);
+                updateStatus('❌ Lỗi nội bộ khuyến nghị. Xem console.');
+            }
+        }
+
+        function runMachineLearning() {
+            if (!currentData || currentData.length < 10) {
+                document.getElementById('mlContent').textContent = '❌ Chưa đủ dữ liệu để huấn luyện (tối thiểu 10 kỳ).';
+                return;
+            }
+
+            const el = document.getElementById('mlContent');
+            const freq = recentFreq(currentData, Math.min(lookback, currentData.length));
+
+            const total = Object.values(freq).reduce((a,b)=>a+b,0);
+            const probs = {};
+            for (let i=0;i<10;i++) probs[i] = total>0 ? (freq[i]||0)/total : 0;
+
+            const adjusted = {};
+            const avg = total/10 || 1;
+            for (let i=0;i<10;i++){
+                const diff = (avg - (freq[i]||0));
+                adjusted[i] = Math.max(0, 0.1 + diff / (avg*2));
+            }
+            const sumAdj = Object.values(adjusted).reduce((a,b)=>a+b,0) || 1;
+            const norm = {};
+            for (let i=0;i<10;i++) norm[i] = adjusted[i]/sumAdj;
+
+            const existing = document.getElementById('topSelect');
+            const topN = existing ? parseInt(existing.value) : 4;
+
+            const topNList = Object.entries(norm)
+                .sort((a,b)=>b[1]-a[1])
+                .slice(0, topN)
+                .map(([n]) => n)
+                .join(', ');
+
+            // Tính TOP 5 ĐÔI
+            let top5Doi = '';
+            try {
+                const n = Array.isArray(currentData) ? currentData.length : 0;
+                const doiItems = Array.isArray(xitoInfo.doi) ? xitoInfo.doi : [];
+                const haidoiItems = Array.isArray(xitoInfo.haidoi) ? xitoInfo.haidoi : [];
+                
+                const doiLatest = {};
+                for (const item of doiItems) {
+                    const key = String(item.value);
+                    if (!(key in doiLatest) || item.index < doiLatest[key]) doiLatest[key] = item.index;
+                }
+                for (const item of haidoiItems) {
+                    if (Array.isArray(item.value)) {
+                        for (const v of item.value) {
+                            const key = String(v);
+                            if (!(key in doiLatest) || item.index < doiLatest[key]) doiLatest[key] = item.index;
+                        }
+                    }
+                }
+                
+                const doiGaps = [];
+                for (let d = 0; d < 10; d++) {
+                    const k = String(d);
+                    const lastIdx = doiLatest[k];
+                    const gap = lastIdx !== undefined ? lastIdx : n;
+                    doiGaps.push({ digit: d, gap });
+                }
+                doiGaps.sort((a, b) => b.gap - a.gap);
+                top5Doi = doiGaps.slice(0, 4).map(x => x.digit).join(', ');
+            } catch(e){
+                console.error('ML doi error', e);
+            }
+
+            let html = `
+<div style="font-family:'Courier New', monospace; line-height:1.1;">
+<div class="header-text" style="font-size: 18px;">🤖 PHÂN TÍCH MÁY HỌC</div>
+<div class="subheader-text">Dữ liệu: ${currentData.length} kỳ | Lookback: ${lookback}</div>
+<div style="margin-top: 3px;"><span style="font-weight: bold; color: #1976D2;">Chọn:</span> <select id="topSelect" onchange="runMachineLearning()" style="padding:3px 8px; margin-left:5px; font-size:13px; border: 1px solid #ccc;"><option value="1">Top 1</option><option value="2">Top 2</option><option value="3" selected>Top 3</option><option value="4">Top 4</option><option value="5">Top 5</option></select></div>
+<div style="display: flex; gap: 20px; margin-top: 5px;">
+<div style="flex: 1;"><span style="font-weight: bold; color: #764ba2;">🎯 XIÊN/HÀNG:</span> <span style="font-size: 24px; font-weight: bold; color: #D32F2F; letter-spacing: 4px;">${topNList}</span></div>
+<div style="flex: 1;"><span style="font-weight: bold; color: #00695C;">🎯 ĐÔI (GAP):</span> <span style="font-size: 24px; font-weight: bold; color: #00695C; letter-spacing: 4px;">${top5Doi}</span></div>
+</div>
+<div style="margin-top: 5px; padding: 5px; background: #FFF3E0; border-left: 3px solid #FF6F00; font-size: 11px;">💡 Số xuất hiện ÍT trong lookback có xác suất cao hơn</div>
+<div style="margin-top: 8px;"><div style="font-weight: bold; color: #1976D2; margin-bottom: 3px;">📈 BẢNG XÁC SUẤT</div>
+<table style="width:100%; border-collapse:collapse; font-size: 13px;">
+<thead><tr style="background: #1976D2; color: white;">
+<th style="padding: 5px; text-align: center; border: 1px solid #ddd;">Số</th>
+<th style="padding: 5px; text-align: center; border: 1px solid #ddd;">Tần suất</th>
+<th style="padding: 5px; text-align: center; border: 1px solid #ddd;">Xác suất ML</th>
+</tr></thead>
+<tbody>`;
+
+            for (let i=0;i<10;i++){
+                const p = (norm[i]*100).toFixed(2);
+                const isTopN = topNList.split(', ').includes(String(i));
+                const bgColor = isTopN ? '#FFEBEE' : (i % 2 === 0 ? '#f9f9f9' : 'white');
+                const fontWeight = isTopN ? 'bold' : 'normal';
+                const textColor = isTopN ? '#D32F2F' : '#333';
+                
+                html += `<tr style="background: ${bgColor};"><td style="padding: 4px; text-align: center; border: 1px solid #ddd; font-size: 16px; font-weight: ${fontWeight}; color: ${textColor};">${i}</td><td style="padding: 4px; text-align: center; border: 1px solid #ddd;">${freq[i]||0}</td><td style="padding: 4px; text-align: center; border: 1px solid #ddd; font-weight: ${fontWeight}; color: ${textColor};">${p}%</td></tr>`;
+            }
+
+            html += `</tbody></table></div></div>`;
+            el.innerHTML = html;
+
+            const sel = document.getElementById('topSelect');
+            if (sel) sel.value = topN;
+        }
+    </script>
+</body>
+</html>
